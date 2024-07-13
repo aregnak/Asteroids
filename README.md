@@ -1,1 +1,1 @@
-Simple game to learn SFML
+Simple game to learn SFML and C++
