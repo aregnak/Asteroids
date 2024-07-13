@@ -2,8 +2,11 @@
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
+#include <SFML/Graphics/Sprite.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Keyboard.hpp>
+#include <iostream>
+#include <math.h>
 
 class Entity
 {
@@ -11,6 +14,24 @@ public:
     Entity(float x, float y)
     {
         rect.setSize(sf::Vector2f(x, y));
+
+        if (!texture.loadFromFile("res/player.png"))
+        {
+            std::cout << "Texture loading failed" << std::endl;
+            system("pause");
+        }
+
+        sprite.setTexture(texture);
+        sprite.setScale(0.7f, 0.7f);
+        sprite.setPosition(400, 400);
+        sprite.setOrigin(sprite.getLocalBounds().width / 2, sprite.getLocalBounds().height / 2);
+
+        acceleration = 0.0001f;
+        _rotation = 0.01f;
+
+        velocity = sf::Vector2f(0.f, 0.f);
+        maxspeed = 0.5f;
+
         up = false;
         down = false;
         left = false;
@@ -53,25 +74,55 @@ public:
     void update()
     {
         sf::Vector2f movement;
+
         if (up)
-            movement.y -= 0.1f;
+        {
+            sf::Vector2f direction = sf::Vector2f(std::cos(sprite.getRotation() * M_PI / 180.0f),
+                                                  std::sin(sprite.getRotation() * M_PI / 180.0f));
+
+            velocity -= direction * acceleration;
+        }
+
         if (down)
-            movement.y += 0.1f;
+        {
+            sf::Vector2f direction = sf::Vector2f(std::cos(sprite.getRotation() * M_PI / 180.0f),
+                                                  std::sin(sprite.getRotation() * M_PI / 180.0f));
+
+            velocity += direction * acceleration;
+        }
+
         if (left)
-            movement.x -= 0.1f;
+        {
+            sprite.rotate(-_rotation);
+        }
+
         if (right)
-            movement.x += 0.1f;
+        {
+            sprite.rotate(_rotation);
+        }
 
-        rect.move(movement/5.0f);
+        float speed = std::sqrt(velocity.x * velocity.x + velocity.y * velocity.y);
+        if (speed > maxspeed)
+        {
+            velocity *= maxspeed / speed;
+        }
+
+        rect.move(velocity / 50.0f);
+        sprite.move(velocity / 50.0f);
     }
 
+    void drawTo(sf::RenderWindow& window) { window.draw(sprite); }
 
-    void drawTo(sf::RenderWindow &window)
-    {
-        window.draw(rect);
-    }
 private:
     sf::RectangleShape rect;
+    sf::Texture texture;
+    sf::Sprite sprite;
+
+    float acceleration;
+    float _rotation;
+
+    sf::Vector2f velocity;
+    float maxspeed;
 
     bool up;
     bool down;

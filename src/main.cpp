@@ -3,26 +3,13 @@
 #include <SFML/Graphics/Rect.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Window/Keyboard.hpp>
-#include <iostream>
 
 #include "Entity.h"
 
 
 int main()
 {
-    sf::RenderWindow window(sf::VideoMode(800, 600), "Asteroids");
-
-    sf::Texture playerModel;
-
-    if (!playerModel.loadFromFile("res/player.png"))
-    {
-        std::cout << "Texture loading failed" << std::endl;
-        system("pause");
-    }
-
-    sf::Sprite player;
-    player.setTexture(playerModel);
-    player.scale(0.7, 0.7);
+    sf::RenderWindow window(sf::VideoMode(800, 800), "Asteroids");
 
     Entity something(30, 30);
 
@@ -41,19 +28,20 @@ int main()
                 {
                     window.close();
                 }
-                
+
                 something.processEvent(event.key.code, true);
             }
             else if (event.type == event.KeyReleased)
             {
                 something.processEvent(event.key.code, false);
             }
-        }          
+        }
 
         window.clear();
-        //window.draw(player);
+
         something.update();
         something.drawTo(window);
+
         window.display();
     }
 
