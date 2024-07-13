@@ -26,11 +26,11 @@ public:
         sprite.setPosition(400, 400);
         sprite.setOrigin(sprite.getLocalBounds().width / 2, sprite.getLocalBounds().height / 2);
 
-        acceleration = 0.0001f;
-        _rotation = 0.01f;
+        acceleration = 0.0005f;
+        _rotation = 0.02f;
 
         velocity = sf::Vector2f(0.f, 0.f);
-        maxspeed = 0.5f;
+        maxspeed = 1.0f;
 
         up = false;
         down = false;

@@ -9,7 +9,8 @@
 
 int main()
 {
-    sf::RenderWindow window(sf::VideoMode(800, 800), "Asteroids");
+    sf::RenderWindow window(sf::VideoMode(800, 800), "Asteroids", sf::Style::Default,
+                            sf::ContextSettings(0, 0, 100));
 
     Entity something(30, 30);
 
