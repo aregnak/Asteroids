@@ -3,26 +3,31 @@
 #include <SFML/Graphics/Rect.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Window/Keyboard.hpp>
+#include <SFML/Window/WindowStyle.hpp>
 
-#include "Entity.h"
-
+#include "Player.h"
 
 int main()
 {
+    // game window parameters
     sf::RenderWindow window(sf::VideoMode(800, 800), "Asteroids", sf::Style::Default,
-                            sf::ContextSettings(0, 0, 100));
+                            sf::ContextSettings(0, 0, 50));
 
-    Entity something(30, 30);
+    //player size
+    Player player(30, 30);
 
     while (window.isOpen())
     {
         sf::Event event;
         while (window.pollEvent(event))
         {
+            // close window if window is closed
             if (event.type == sf::Event::Closed)
             {
                 window.close();
             }
+
+            // escape to close window
             else if (event.type == event.KeyPressed)
             {
                 if (event.key.code == sf::Keyboard::Escape)
@@ -30,18 +35,20 @@ int main()
                     window.close();
                 }
 
-                something.processEvent(event.key.code, true);
+                // key pressed for player movement
+                player.processEvent(event.key.code, true);
             }
+
             else if (event.type == event.KeyReleased)
             {
-                something.processEvent(event.key.code, false);
+                player.processEvent(event.key.code, false);
             }
         }
 
         window.clear();
 
-        something.update();
-        something.drawTo(window);
+        player.update();
+        player.drawTo(window);
 
         window.display();
     }
