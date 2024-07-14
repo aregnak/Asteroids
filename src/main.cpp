@@ -6,6 +6,7 @@
 #include <SFML/Window/WindowStyle.hpp>
 
 #include "Player.h"
+#include "Bullet.h"
 
 int main()
 {
@@ -15,6 +16,7 @@ int main()
 
     //player size
     Player player(30, 30);
+    Bullet bullet(1);
 
     while (window.isOpen())
     {
@@ -49,6 +51,7 @@ int main()
 
         player.update();
         player.drawTo(window);
+        bullet.drawTo(window);
 
         window.display();
     }
