@@ -40,6 +40,7 @@ public:
         down = false;
         left = false;
         right = false;
+        //shoot = false;
     }
 
     void processEvent(sf::Keyboard::Key key, bool isPressed)
@@ -65,6 +66,11 @@ public:
             {
                 right = true;
             }
+
+            /* if (key == sf::Keyboard::Space)
+            {
+                shoot = true;
+            }*/
         }
         else
         {
@@ -72,6 +78,7 @@ public:
             down = false;
             left = false;
             right = false;
+            //shoot = false;
         }
     }
 
@@ -107,6 +114,16 @@ public:
             rect.rotate(_rotation);
         }
 
+        /*if (shoot)
+        {
+            sf::Vector2f direction = sf::Vector2f(std::cos(sprite.getRotation() * M_PI / 180.0f),
+                                                  std::sin(sprite.getRotation() * M_PI / 180.0f));
+
+            sf::Vector2f position(rect.getPosition().x, rect.getPosition().y);
+
+            bullet.push_back(Bullet(position, direction));
+        }*/
+
         // never surpass max speed
         float _speed = std::sqrt(_velocity.x * _velocity.x + _velocity.y * _velocity.y);
         if (_speed > _maxspeed)
@@ -117,8 +134,8 @@ public:
         rect.move(_velocity / 50.0f); // move hitbox
         sprite.move(_velocity / 50.0f); // move sprite
 
-        std::cout << "x:" << rect.getPosition().x << "  y:" << rect.getPosition().y
-                  << std::endl; // position for debug
+        // std::cout << "x:" << rect.getPosition().x << "  y:" << rect.getPosition().y
+        //         << "    rot:" << rect.getRotation() << std::endl; // position for debug
 
         // teleport player to opposite side if out of play area
         if (rect.getPosition().x <= -15)
@@ -146,7 +163,19 @@ public:
     void drawTo(sf::RenderWindow& window)
     {
         window.draw(sprite);
-        // window.draw(rect);
+        window.draw(rect);
+    }
+
+    sf::Vector2f getPlayerPos()
+    {
+        sf::Vector2f position(rect.getPosition().x, rect.getPosition().y);
+        return (position);
+    }
+
+    float getPlayerDir()
+    {
+        return rect.getRotation();
+        //
     }
 
 private:
@@ -159,8 +188,11 @@ private:
     float _maxspeed;
     sf::Vector2f _velocity;
 
+    //std::vector<Bullet> bullet;
+
     bool up;
     bool down;
     bool left;
     bool right;
+    //bool shoot;
 };
