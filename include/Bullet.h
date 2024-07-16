@@ -12,30 +12,30 @@ class Bullet
 {
 public:
     Bullet(sf::Vector2f position, float angle)
-        : velocity(0.5f, 0.5f)
     {
+        // get shooting direction
+        float radianAngle = angle * M_PI / 180.0f;
+        velocity = sf::Vector2f(std::cos(radianAngle), std::sin(radianAngle));
+
         pew.setRadius(3);
         pew.setPosition(position);
+        pew.setRotation(angle);
 
-        sf::Vector2f direction =
-            sf::Vector2f(std::cos(angle * M_PI / 180.0f), std::sin(angle * M_PI / 180.0f));
-
-        velocity -= direction;
-        std::cout << "bullet angle: " << angle << " bullet direction X:" << direction.x
-                  << "  Y:" << direction.y << std::endl;
-        //
+        // debug stuff
+        std::cout << "bullet angle: " << angle << " x vel: " << velocity.x
+                  << " y vel: " << velocity.y << std::endl;
     }
 
     void update()
     {
-        pew.move(velocity / 10.f);
-        //
+        // shooting "animaiton"
+        pew.move(-velocity / 10.f);
     }
 
     void drawTo(sf::RenderWindow& window) const
     {
+        // draw pew on screen
         window.draw(pew);
-        //
     }
 
 private:
