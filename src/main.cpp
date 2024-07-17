@@ -67,6 +67,11 @@ int main()
             bullet.drawTo(window);
         }
 
+        // erase bullets if bullet.erase() is true
+        bullets.erase(std::remove_if(bullets.begin(), bullets.end(),
+                                     [](const Bullet& bullet) { return bullet.erase(); }),
+                      bullets.end());
+
         window.display();
     }
 

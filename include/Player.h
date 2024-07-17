@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include <SFML/Graphics/CircleShape.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/System/Vector2.hpp>
@@ -146,7 +147,7 @@ public:
     void drawTo(sf::RenderWindow& window)
     {
         window.draw(sprite);
-        // window.draw(rect);
+        //window.draw(rect);
     }
 
     sf::Vector2f getPlayerPos()
