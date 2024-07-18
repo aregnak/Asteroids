@@ -2,7 +2,6 @@
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Graphics/CircleShape.hpp>
-#include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/System/Clock.hpp>
 #include <SFML/System/Sleep.hpp>
@@ -71,6 +70,8 @@ public:
         float dy = std::min(std::abs(currentPos.y - _initialPos.y),
                             800.0f - std::abs(currentPos.y - _initialPos.y));
         float distance = std::sqrt(dx * dx + dy * dy);
+
+        //std::cout << "Distance: " << distance << ", Max Distance: " << _maxDist << std::endl;
         return distance > _maxDist;
     }
 

@@ -7,9 +7,11 @@
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <SFML/Window/WindowStyle.hpp>
+#include <type_traits>
 
 #include "Player.h"
 #include "Bullet.h"
+#include "Asteroid.h"
 
 int main()
 {
@@ -20,6 +22,7 @@ int main()
     //player size
     Player player(30, 30);
     std::vector<Bullet> bullets;
+    std::vector<Asteroid> rocks;
 
     sf::Clock timer;
     sf::Time shootCD = sf::milliseconds(200); // shooting cooldown
@@ -61,8 +64,14 @@ int main()
             {
                 player.processEvent(event.key.code, false);
             }
-        }
 
+            //for (int rocksNum; rocksNum < 10; rocksNum++)
+            //{
+            sf::Vector2f rockSize = sf::Vector2f(30, 30);
+            sf::Vector2f pos = sf::Vector2f(400, 400);
+            rocks.push_back(Asteroid(pos, rockSize));
+            //}
+        }
         window.clear();
 
         player.update();
@@ -74,10 +83,20 @@ int main()
             bullet.drawTo(window);
         }
 
+        for (Asteroid& rock : rocks)
+        {
+            rock.update(deltaTime);
+            rock.drawTo(window);
+        }
+
         // erase bullets if bullet.erase() is true
         bullets.erase(std::remove_if(bullets.begin(), bullets.end(),
                                      [](const Bullet& bullet) { return bullet.erase(); }),
                       bullets.end());
+
+        rocks.erase(std::remove_if(rocks.begin(), rocks.end(),
+                                   [](const Asteroid& rock) { return rock.erase(); }),
+                    rocks.end());
 
         window.display();
     }
