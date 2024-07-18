@@ -4,6 +4,9 @@
 #include <SFML/Graphics/CircleShape.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/System/Clock.hpp>
+#include <SFML/System/Sleep.hpp>
+#include <SFML/System/Time.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <cmath>
 #include <iostream>
@@ -15,27 +18,26 @@ public:
     {
         // get shooting direction
         float radianAngle = angle * M_PI / 180.0f;
-        velocity = sf::Vector2f(std::cos(radianAngle), std::sin(radianAngle));
+        _velocity = sf::Vector2f(std::cos(radianAngle), std::sin(radianAngle));
 
         pew.setRadius(3);
         pew.setPosition(position);
 
-        initialPos = pew.getPosition();
-        maxDist = 399.0f; // set maximum travel distance before erase of bullet (px)
+        _initialPos = pew.getPosition();
+        _maxDist = 399.0f; // set maximum travel distance before erase of bullet (px)
 
         // debug stuff
-        std::cout << "bullet angle: " << angle << " x vel: " << velocity.x
-                  << " y vel: " << velocity.y << std::endl;
+        std::cout << "bullet angle: " << angle << " x vel: " << _velocity.x
+                  << " y vel: " << _velocity.y << std::endl;
     }
 
-    void update()
+    void update(sf::Time deltaTime)
     {
         // shooting "animaiton"
-        pew.move(-velocity / 10.f);
-        //
-        sf::Vector2f newPos = pew.getPosition();
+        pew.move((-_velocity / 10.f) * _bulletSpeed * deltaTime.asSeconds());
 
-        // keep bullet in screen
+        // keep bullet in screen if it goes out
+        sf::Vector2f newPos = pew.getPosition();
         if (newPos.x < 0)
         {
             newPos.x = 800;
@@ -63,22 +65,32 @@ public:
 
     bool erase() const
     {
-        //sf::Vector2f currentPos = pew.getPosition();
-        //float distance = std::sqrt(std::pow(currentPos.x - initialPos.x, 2) +
-        //                           std::pow(currentPos.y - initialPos.y, 2));
-
         sf::Vector2f currentPos = pew.getPosition();
-        float dx = std::min(std::abs(currentPos.x - initialPos.x),
-                            800.0f - std::abs(currentPos.x - initialPos.x));
-        float dy = std::min(std::abs(currentPos.y - initialPos.y),
-                            800.0f - std::abs(currentPos.y - initialPos.y));
+        float dx = std::min(std::abs(currentPos.x - _initialPos.x),
+                            800.0f - std::abs(currentPos.x - _initialPos.x));
+        float dy = std::min(std::abs(currentPos.y - _initialPos.y),
+                            800.0f - std::abs(currentPos.y - _initialPos.y));
         float distance = std::sqrt(dx * dx + dy * dy);
-        return distance > maxDist;
+        return distance > _maxDist;
+    }
+
+    static bool canShoot(sf::Time cooldown)
+    {
+        static sf::Clock timer;
+        if (timer.getElapsedTime() > cooldown)
+        {
+            timer.restart();
+            return true;
+        }
+        return false;
     }
 
 private:
     sf::CircleShape pew;
-    sf::Vector2f velocity;
-    float maxDist;
-    sf::Vector2f initialPos;
+    sf::Vector2f _velocity;
+    float _maxDist;
+    sf::Vector2f _initialPos;
+    sf::Vector2f _newPos;
+
+    float _bulletSpeed = 3500.f;
 };

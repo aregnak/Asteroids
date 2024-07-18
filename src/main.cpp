@@ -2,6 +2,8 @@
 #include <SFML/Graphics/CircleShape.hpp>
 #include <SFML/Graphics/Rect.hpp>
 #include <SFML/Graphics/Sprite.hpp>
+#include <SFML/System/Clock.hpp>
+#include <SFML/System/Time.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <SFML/Window/WindowStyle.hpp>
@@ -19,8 +21,13 @@ int main()
     Player player(30, 30);
     std::vector<Bullet> bullets;
 
+    sf::Clock timer;
+    sf::Time shootCD = sf::milliseconds(200); // shooting cooldown
+
     while (window.isOpen())
     {
+        sf::Time deltaTime = timer.restart();
+
         sf::Event event;
         while (window.pollEvent(event))
         {
@@ -41,7 +48,7 @@ int main()
                 // key pressed for player movement
                 player.processEvent(event.key.code, true);
 
-                if (event.key.code == sf::Keyboard::Space)
+                if (event.key.code == sf::Keyboard::Space && Bullet::canShoot(shootCD))
                 {
                     sf::Vector2f playerPos = player.getPlayerPos();
                     float playerDir = player.getPlayerDir();
@@ -63,7 +70,7 @@ int main()
 
         for (Bullet& bullet : bullets)
         {
-            bullet.update();
+            bullet.update(deltaTime);
             bullet.drawTo(window);
         }
 
