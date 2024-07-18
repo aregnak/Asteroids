@@ -61,29 +61,10 @@ public:
 
     bool erase() const
     {
-        /* sf::Vector2f currentPos = rock.getPosition();
-        float dx = std::abs(currentPos.x - _initialPos.x);
-        float dy = std::abs(currentPos.y - _initialPos.y);
-
-        if (dx > 400.0f)
-            dx = 800.0f - dx;
-        if (dy > 400.0f)
-            dy = 800.0f - dy;
-
-        float distance = std::sqrt(dx * dx + dy * dy);*/
-        /*sf::Vector2f currentPos = rock.getPosition();
-        float dx = std::min(std::abs((currentPos.x - _initialPos.x)),
-                            std::abs((currentPos.x - _initialPos.x)));
-        float dy = std::min(std::abs((currentPos.y - _initialPos.y)),
-                            std::abs((currentPos.y - _initialPos.y)));
-        float distance = std::sqrt(dx * dx + dy * dy);
-*/
-
         sf::Vector2f currentPos = rock.getPosition();
         float dx = std::abs(currentPos.x - _initialPos.x);
         float dy = std::abs(currentPos.y - _initialPos.y);
 
-        // Adjust for screen wrapping
         if (currentPos.x < 400.0f)
             dx = 800.0f - dx;
         if (currentPos.y < 400.0f)
