@@ -58,6 +58,13 @@ int main()
 
                     bullets.push_back(Bullet(playerPos, playerDir));
                 }
+
+                if (event.key.code == sf::Keyboard::G)
+                {
+                    sf::Vector2f rockSize = sf::Vector2f(30, 30);
+                    sf::Vector2f pos = sf::Vector2f(400, 400);
+                    rocks.push_back(Asteroid(pos, rockSize));
+                }
             }
 
             else if (event.type == event.KeyReleased)
@@ -67,9 +74,7 @@ int main()
 
             //for (int rocksNum; rocksNum < 10; rocksNum++)
             //{
-            sf::Vector2f rockSize = sf::Vector2f(30, 30);
-            sf::Vector2f pos = sf::Vector2f(400, 400);
-            rocks.push_back(Asteroid(pos, rockSize));
+
             //}
         }
         window.clear();

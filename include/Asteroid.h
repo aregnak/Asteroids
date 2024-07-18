@@ -7,6 +7,7 @@
 #include <SFML/System/Vector2.hpp>
 #include <cmath>
 #include <iostream>
+#include <ostream>
 
 class Asteroid
 {
@@ -19,8 +20,8 @@ public:
         rock.setPosition(_position);
         rock.setOrigin(10, 10);
 
-        _velocity = sf::Vector2f(100, 0);
-        _maxDist = 400.f;
+        _velocity = sf::Vector2f(100, 100);
+        _maxDist = 799.f;
         _initialPos = rock.getPosition();
         //
         //
@@ -70,12 +71,29 @@ public:
             dy = 800.0f - dy;
 
         float distance = std::sqrt(dx * dx + dy * dy);*/
+        /*sf::Vector2f currentPos = rock.getPosition();
+        float dx = std::min(std::abs((currentPos.x - _initialPos.x)),
+                            std::abs((currentPos.x - _initialPos.x)));
+        float dy = std::min(std::abs((currentPos.y - _initialPos.y)),
+                            std::abs((currentPos.y - _initialPos.y)));
+        float distance = std::sqrt(dx * dx + dy * dy);
+*/
+
         sf::Vector2f currentPos = rock.getPosition();
-        float dx = std::min((currentPos.x - _initialPos.x), (currentPos.x - _initialPos.x));
-        float dy = std::min((currentPos.y - _initialPos.y), (currentPos.y - _initialPos.y));
+        float dx = std::abs(currentPos.x - _initialPos.x);
+        float dy = std::abs(currentPos.y - _initialPos.y);
+
+        // Adjust for screen wrapping
+        if (currentPos.x < 400.0f)
+            dx = 800.0f - dx;
+        if (currentPos.y < 400.0f)
+            dy = 800.0f - dy;
+
         float distance = std::sqrt(dx * dx + dy * dy);
 
-        std::cout << "Distance: " << distance << ", Max Distance: " << _maxDist << std::endl;
+        std::cout << "Distance: " << distance << ", Max Distance: " << _maxDist
+                  << ", initial pos: " << _initialPos.x << ", current pos: " << currentPos.x
+                  << "   " << dx << " " << dy << std::endl;
 
         return distance > _maxDist;
     }
