@@ -161,6 +161,10 @@ public:
         return rect.getRotation();
         //
     }
+    const sf::RectangleShape& getShape() const
+    {
+        return rect; //
+    }
 
 private:
     sf::RectangleShape rect; // hitbox of player (slightly smaller rectangle)

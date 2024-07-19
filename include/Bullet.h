@@ -26,8 +26,8 @@ public:
         _maxDist = 399.0f; // set maximum travel distance before erase of bullet (px)
 
         // debug stuff
-        std::cout << "bullet angle: " << angle << " x vel: " << _velocity.x
-                  << " y vel: " << _velocity.y << std::endl;
+        //std::cout << "bullet angle: " << angle << " x vel: " << _velocity.x
+        //          << " y vel: " << _velocity.y << std::endl;
     }
 
     void update(sf::Time deltaTime)
@@ -84,6 +84,11 @@ public:
             return true;
         }
         return false;
+    }
+
+    const sf::CircleShape& getShape() const
+    {
+        return pew; //
     }
 
 private:

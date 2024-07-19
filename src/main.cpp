@@ -7,7 +7,7 @@
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <SFML/Window/WindowStyle.hpp>
-#include <type_traits>
+#include <iostream>
 
 #include "Player.h"
 #include "Bullet.h"
@@ -62,7 +62,7 @@ int main()
                 if (event.key.code == sf::Keyboard::G)
                 {
                     sf::Vector2f rockSize = sf::Vector2f(30, 30);
-                    sf::Vector2f pos = sf::Vector2f(400, 400);
+                    sf::Vector2f pos = sf::Vector2f(700, 200);
                     rocks.push_back(Asteroid(pos, rockSize));
                 }
             }
@@ -88,16 +88,29 @@ int main()
             bullet.drawTo(window);
         }
 
-        for (Asteroid& rock : rocks)
-        {
-            rock.update(deltaTime);
-            rock.drawTo(window);
-        }
-
         // erase bullets if bullet.erase() is true
         bullets.erase(std::remove_if(bullets.begin(), bullets.end(),
                                      [](const Bullet& bullet) { return bullet.erase(); }),
                       bullets.end());
+
+        for (Asteroid& rock : rocks)
+        {
+            rock.update(deltaTime);
+            rock.drawTo(window);
+
+            for (const Bullet& bullet : bullets)
+            {
+                if (rock.collision(bullet.getShape()))
+                {
+                    std::cout << "rock hit" << std::endl;
+                }
+            }
+
+            if (rock.collision(player.getShape()))
+            {
+                std::cout << "player hit!" << std::endl;
+            }
+        }
 
         rocks.erase(std::remove_if(rocks.begin(), rocks.end(),
                                    [](const Asteroid& rock) { return rock.erase(); }),
