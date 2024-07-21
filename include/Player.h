@@ -16,7 +16,7 @@ public:
     {
         rect.setSize(sf::Vector2f(x, y));
 
-        if (!texture.loadFromFile("res/player.png"))
+        if (!texture.loadFromFile("res/player_new.png"))
         {
             std::cout << "Texture loading failed" << std::endl;
             system("pause");
@@ -24,7 +24,7 @@ public:
 
         // player sprite rendering parameters
         sprite.setTexture(texture);
-        sprite.setScale(0.7, 0.7);
+        sprite.setScale(0.35, 0.35);
         sprite.setPosition(400, 400);
         sprite.setOrigin(sprite.getLocalBounds().width / 2, sprite.getLocalBounds().height / 2);
 
@@ -36,7 +36,7 @@ public:
         _rotation = 0.03f;
 
         _velocity = sf::Vector2f(0.f, 0.f);
-        _maxspeed = 2.0f;
+        _maxspeed = 1.5f;
 
         up = false;
         down = false;

@@ -71,7 +71,9 @@ public:
                             800.0f - std::abs(currentPos.y - _initialPos.y));
         float distance = std::sqrt(dx * dx + dy * dy);
 
-        //std::cout << "Distance: " << distance << ", Max Distance: " << _maxDist << std::endl;
+        //std::cout << "Distance: " << distance << ", Max Distance: " << _maxDist << ", dx: " << dx
+        //          << ", dy: " << dy << std::endl;
+
         return distance > _maxDist;
     }
 

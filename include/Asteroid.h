@@ -13,14 +13,37 @@
 class Asteroid
 {
 public:
-    Asteroid(sf::Vector2f position, sf::Vector2f rockSize)
-        : _position(position)
-        , _maxDist(799.f) // max can only be screen width/height -1
-        , _velocity(30, 30)
+    Asteroid(sf::Vector2f rockSize)
+        //: _position(position)
+        : _maxDist(799.f) // max can only be screen width/height -1
+    //, _velocity(30, 30)
     {
+        int side = rand() % 4;
+        switch (side)
+        {
+            case 0: // Top
+                _position = sf::Vector2f(rand() % (800 - 50 + 1) + 50, 50);
+                break;
+            case 1: // Bottom
+                _position = sf::Vector2f(rand() % (800 - 50 + 1) + 50, 350);
+                break;
+            case 2: // Left
+                _position = sf::Vector2f(rand() % (800 - 50 + 1) + 50, 350);
+                break;
+            case 3: // Right
+                _position = sf::Vector2f(rand() % (800 - 50 + 1) + 50, 0);
+                break;
+        }
+        //_position = sf::Vector2f(350, 200);
+
         rock.setSize(rockSize);
         rock.setPosition(_position);
         rock.setOrigin(10, 10);
+
+        _velocity = sf::Vector2f(100, 100);
+        //_velocity = sf::Vector2f(static_cast<float>(rand() % 200 - 100),
+        //                         static_cast<float>(rand() % 200 - 100));
+        _initialPos = rock.getPosition();
 
         _initialPos = rock.getPosition();
         //
@@ -30,7 +53,6 @@ public:
     void update(sf::Time deltaTime)
     {
         rock.move(_velocity * deltaTime.asSeconds());
-        // rock.move(_position);
         rock.rotate(10.f * deltaTime.asSeconds());
 
         sf::Vector2f newPos = rock.getPosition();

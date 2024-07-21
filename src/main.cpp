@@ -27,6 +27,11 @@ int main()
     sf::Clock timer;
     sf::Time shootCD = sf::milliseconds(200); // shooting cooldown
 
+    for (int rockCnt = 0; rockCnt <= 5; rockCnt++)
+    {
+        rocks.push_back(Asteroid(sf::Vector2f(50, 50)));
+    }
+
     while (window.isOpen())
     {
         sf::Time deltaTime = timer.restart();
@@ -57,13 +62,6 @@ int main()
                     float playerDir = player.getPlayerDir();
 
                     bullets.push_back(Bullet(playerPos, playerDir));
-                }
-
-                if (event.key.code == sf::Keyboard::G)
-                {
-                    sf::Vector2f rockSize = sf::Vector2f(30, 30);
-                    sf::Vector2f pos = sf::Vector2f(700, 200);
-                    rocks.push_back(Asteroid(pos, rockSize));
                 }
             }
 
