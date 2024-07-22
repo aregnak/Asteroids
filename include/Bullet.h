@@ -78,6 +78,11 @@ public:
         return distance > _maxDist;
     }
 
+    bool hitRock() const
+    {
+        return _isHit; //
+    }
+
     static bool canShoot(sf::Time cooldown)
     {
         static sf::Clock timer;

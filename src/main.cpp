@@ -14,12 +14,12 @@
 #include "Bullet.h"
 #include "Asteroid.h"
 
-void spawnAsteroids(std::vector<Asteroid>& rocks, int count, sf::Vector2f rockSize,
-                    sf::Vector2f position)
+void spawnAsteroids(std::vector<Asteroid>& rocks, int count, sf::Vector2f rockSize, bool split,
+                    sf::Vector2f position = sf::Vector2f())
 {
     for (int i = 0; i < count; i++)
     {
-        rocks.push_back(Asteroid(rockSize, position));
+        rocks.push_back(Asteroid(rockSize, split, position));
     }
 }
 
@@ -28,6 +28,7 @@ int main()
     // game window parameters
     sf::RenderWindow window(sf::VideoMode(800, 800), "Asteroids", sf::Style::Default,
                             sf::ContextSettings(0, 0, 50));
+    srand(static_cast<unsigned>(time(0)));
 
     //player size
     Player player(30, 30);
@@ -37,10 +38,7 @@ int main()
     sf::Clock timer;
     sf::Time shootCD = sf::milliseconds(200); // shooting cooldown
 
-    sf::Vector2f rockRandomPos =
-        sf::Vector2f(rand() % (800 - 50 + 1) + 50, rand() % (800 - 50 + 1) + 50);
-
-    spawnAsteroids(rocks, 5, sf::Vector2f(50, 50), rockRandomPos);
+    spawnAsteroids(rocks, 1, sf::Vector2f(50, 50), false);
 
     while (window.isOpen())
     {
@@ -106,15 +104,22 @@ int main()
             rock.update(deltaTime);
             rock.drawTo(window);
 
-            for (const Bullet& bullet : bullets)
+            for (Bullet& bullet : bullets)
             {
                 if (rock.collision(bullet.getShape()))
                 {
-                    std::cout << "rock hit" << std::endl;
-
                     rock.setHit();
-                    spawnAsteroids(rocks, 2, sf::Vector2f(20, 20), rock.getPos());
-                    // bullet.setHit();
+                    if (rock.canSplit())
+                    {
+                        // split the big rock into 2 small rocks at big rock position
+                        rock.setHit();
+                        bullet.setHit();
+                        spawnAsteroids(rocks, 2, sf::Vector2f(30, 30), true, rock.getPos());
+                        rock.setSplit();
+                        std::cout << "rock hit and Split" << rock.canSplit() << std::endl;
+                    }
+
+                    std::cout << "rock hit (last)" << std::endl;
                 }
             }
 
@@ -129,10 +134,10 @@ int main()
         int erasedCount = std::distance(newEnd, rocks.end());
         rocks.erase(newEnd, rocks.end());
 
-        if (erasedCount > 0)
-        {
-            spawnAsteroids(rocks, erasedCount, sf::Vector2f(30, 30), rockRandomPos);
-        }
+        bullets.erase(std::remove_if(bullets.begin(), bullets.end(),
+                                     [](const Bullet& bullet) { return bullet.hitRock(); }),
+                      bullets.end());
+
         window.display();
     }
 

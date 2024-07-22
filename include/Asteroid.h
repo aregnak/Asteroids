@@ -12,8 +12,10 @@
 class Asteroid
 {
 public:
-    Asteroid(sf::Vector2f rockSize, sf::Vector2f position = sf::Vector2f())
+    Asteroid(sf::Vector2f rockSize, bool split, sf::Vector2f position = sf::Vector2f())
         : _isHit(false)
+        , _isSplit(split)
+        , _size(rockSize)
     {
         if (position == sf::Vector2f())
         {
@@ -48,9 +50,6 @@ public:
         rock.setPosition(_position);
         rock.setOrigin(rock.getSize().x / 2, rock.getSize().y / 2);
 
-        _velocity = sf::Vector2f(static_cast<float>(rand() % (100 - 10 + 1) + 10),
-                                 static_cast<float>(rand() % (100 - 10) + 10));
-
         _velocity = sf::Vector2f((rand() % 200) - 100, (rand() % 200) - 100);
 
         _initialPos = rock.getPosition();
@@ -81,6 +80,7 @@ public:
             newPos.y = 0;
         }
         rock.setPosition(newPos);
+        std::cout << _isSplit << std::endl;
     }
 
     void drawTo(sf::RenderWindow& window) const
@@ -121,6 +121,16 @@ public:
         _isHit = true; //
     }
 
+    bool canSplit() const
+    {
+        return !_isSplit && _size.x > 20 && _size.y > 20; //
+    }
+
+    void setSplit()
+    {
+        _isSplit = true; //
+    }
+
     sf::Vector2f getPos() const
     {
         return rock.getPosition(); //
@@ -131,6 +141,7 @@ private:
     sf::Vector2f _position;
     sf::Vector2f _velocity;
     sf::Vector2f _initialPos;
+    sf::Vector2f _size;
     bool _isHit;
     bool _isSplit;
 };
