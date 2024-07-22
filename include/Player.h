@@ -33,7 +33,7 @@ public:
                          sprite.getPosition().y - std::sin(sprite.getRotation()));
 
         _acceleration = 0.0007f;
-        _rotation = 0.03f;
+        _rotation = 0.05f;
 
         _velocity = sf::Vector2f(0.f, 0.f);
         _maxspeed = 1.5f;

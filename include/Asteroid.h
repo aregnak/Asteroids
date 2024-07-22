@@ -8,42 +8,50 @@
 #include <SFML/System/Vector2.hpp>
 #include <cmath>
 #include <iostream>
-#include <ostream>
 
 class Asteroid
 {
 public:
-    Asteroid(sf::Vector2f rockSize)
-        //: _position(position)
-        : _maxDist(799.f) // max can only be screen width/height -1
-    //, _velocity(30, 30)
+    Asteroid(sf::Vector2f rockSize, sf::Vector2f position = sf::Vector2f())
+        : _isHit(false)
     {
-        int side = rand() % 4;
-        switch (side)
+        if (position == sf::Vector2f())
         {
-            case 0: // Top
-                _position = sf::Vector2f(rand() % (800 - 50 + 1) + 50, 50);
-                break;
-            case 1: // Bottom
-                _position = sf::Vector2f(rand() % (800 - 50 + 1) + 50, 350);
-                break;
-            case 2: // Left
-                _position = sf::Vector2f(rand() % (800 - 50 + 1) + 50, 350);
-                break;
-            case 3: // Right
-                _position = sf::Vector2f(rand() % (800 - 50 + 1) + 50, 0);
-                break;
+            // Randomly spawn around the border
+            int side = rand() % 4;
+            switch (side)
+            {
+                case 0:
+                    _position = sf::Vector2f(rand() % 800, 0);
+                    break; // top
+                case 1:
+                    _position = sf::Vector2f(rand() % 800, 800);
+                    break; // bottom
+                case 2:
+                    _position = sf::Vector2f(0, rand() % 800);
+                    break; // left
+                case 3:
+                    _position = sf::Vector2f(800, rand() % 800);
+                    break; // right
+            }
         }
+        else
+        {
+            _position = position;
+        }
+
+        //sf::Vector2f(rand() % (800 - 50 + 1) + 50, rand() % (800 - 50 + 1) + 50);
+
         //_position = sf::Vector2f(350, 200);
 
         rock.setSize(rockSize);
         rock.setPosition(_position);
-        rock.setOrigin(10, 10);
+        rock.setOrigin(rock.getSize().x / 2, rock.getSize().y / 2);
 
-        _velocity = sf::Vector2f(100, 100);
-        //_velocity = sf::Vector2f(static_cast<float>(rand() % 200 - 100),
-        //                         static_cast<float>(rand() % 200 - 100));
-        _initialPos = rock.getPosition();
+        _velocity = sf::Vector2f(static_cast<float>(rand() % (100 - 10 + 1) + 10),
+                                 static_cast<float>(rand() % (100 - 10) + 10));
+
+        _velocity = sf::Vector2f((rand() % 200) - 100, (rand() % 200) - 100);
 
         _initialPos = rock.getPosition();
         //
@@ -53,7 +61,7 @@ public:
     void update(sf::Time deltaTime)
     {
         rock.move(_velocity * deltaTime.asSeconds());
-        rock.rotate(10.f * deltaTime.asSeconds());
+        rock.rotate(rand() % (15 - 10 + 1) * deltaTime.asSeconds());
 
         sf::Vector2f newPos = rock.getPosition();
         if (newPos.x < 0)
@@ -83,7 +91,7 @@ public:
 
     bool erase() const
     {
-        sf::Vector2f currentPos = rock.getPosition();
+        /*sf::Vector2f currentPos = rock.getPosition();
         float dx = std::abs(currentPos.x - _initialPos.x);
         float dy = std::abs(currentPos.y - _initialPos.y);
 
@@ -97,8 +105,9 @@ public:
         // std::cout << "Distance: " << distance << ", Max Distance: " << _maxDist
         //           << ", initial pos: " << _initialPos.x << ", current pos: " << currentPos.x
         //           << "   " << dx << " " << dy << std::endl;
+*/
 
-        return distance > _maxDist;
+        return _isHit;
     }
 
     bool collision(const sf::Shape& item) const
@@ -107,10 +116,21 @@ public:
         //
     }
 
+    void setHit()
+    {
+        _isHit = true; //
+    }
+
+    sf::Vector2f getPos() const
+    {
+        return rock.getPosition(); //
+    }
+
 private:
     sf::RectangleShape rock;
     sf::Vector2f _position;
     sf::Vector2f _velocity;
     sf::Vector2f _initialPos;
-    float _maxDist;
+    bool _isHit;
+    bool _isSplit;
 };

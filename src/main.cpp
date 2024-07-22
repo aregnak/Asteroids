@@ -8,10 +8,20 @@
 #include <SFML/Window/Keyboard.hpp>
 #include <SFML/Window/WindowStyle.hpp>
 #include <iostream>
+#include <vector>
 
 #include "Player.h"
 #include "Bullet.h"
 #include "Asteroid.h"
+
+void spawnAsteroids(std::vector<Asteroid>& rocks, int count, sf::Vector2f rockSize,
+                    sf::Vector2f position)
+{
+    for (int i = 0; i < count; i++)
+    {
+        rocks.push_back(Asteroid(rockSize, position));
+    }
+}
 
 int main()
 {
@@ -27,10 +37,10 @@ int main()
     sf::Clock timer;
     sf::Time shootCD = sf::milliseconds(200); // shooting cooldown
 
-    for (int rockCnt = 0; rockCnt <= 5; rockCnt++)
-    {
-        rocks.push_back(Asteroid(sf::Vector2f(50, 50)));
-    }
+    sf::Vector2f rockRandomPos =
+        sf::Vector2f(rand() % (800 - 50 + 1) + 50, rand() % (800 - 50 + 1) + 50);
+
+    spawnAsteroids(rocks, 5, sf::Vector2f(50, 50), rockRandomPos);
 
     while (window.isOpen())
     {
@@ -101,19 +111,28 @@ int main()
                 if (rock.collision(bullet.getShape()))
                 {
                     std::cout << "rock hit" << std::endl;
+
+                    rock.setHit();
+                    spawnAsteroids(rocks, 2, sf::Vector2f(20, 20), rock.getPos());
+                    // bullet.setHit();
                 }
             }
 
             if (rock.collision(player.getShape()))
             {
+                rock.setHit();
                 std::cout << "player hit!" << std::endl;
             }
         }
+        auto newEnd = std::remove_if(rocks.begin(), rocks.end(),
+                                     [](const Asteroid& rock) { return rock.erase(); });
+        int erasedCount = std::distance(newEnd, rocks.end());
+        rocks.erase(newEnd, rocks.end());
 
-        rocks.erase(std::remove_if(rocks.begin(), rocks.end(),
-                                   [](const Asteroid& rock) { return rock.erase(); }),
-                    rocks.end());
-
+        if (erasedCount > 0)
+        {
+            spawnAsteroids(rocks, erasedCount, sf::Vector2f(30, 30), rockRandomPos);
+        }
         window.display();
     }
 

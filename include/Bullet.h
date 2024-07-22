@@ -14,6 +14,7 @@ class Bullet
 {
 public:
     Bullet(sf::Vector2f position, float angle)
+        : _isHit(false)
     {
         // get shooting direction
         float radianAngle = angle * M_PI / 180.0f;
@@ -33,7 +34,7 @@ public:
     void update(sf::Time deltaTime)
     {
         // shooting "animaiton"
-        pew.move((-_velocity / 10.f) * _bulletSpeed * deltaTime.asSeconds());
+        pew.move((-_velocity / 5.f) * _bulletSpeed * deltaTime.asSeconds());
 
         // keep bullet in screen if it goes out
         sf::Vector2f newPos = pew.getPosition();
@@ -93,12 +94,19 @@ public:
         return pew; //
     }
 
+    void setHit()
+    {
+        _isHit = true; //
+    }
+
 private:
     sf::CircleShape pew;
     sf::Vector2f _velocity;
     float _maxDist;
     sf::Vector2f _initialPos;
     sf::Vector2f _newPos;
+
+    bool _isHit;
 
     float _bulletSpeed = 3500.f;
 };
