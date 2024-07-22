@@ -47,7 +47,7 @@ public:
         }
         if (!textureLoaded)
         {
-            if (!texture.loadFromFile("res/asteroid.png"))
+            if (!texture.loadFromFile("res/asteroid_test.png"))
             {
                 std::cout << "Asteroid texture loading failed" << std::endl;
                 system("pause");
@@ -118,8 +118,8 @@ public:
         // std::cout << "Distance: " << distance << ", Max Distance: " << _maxDist
         //           << ", initial pos: " << _initialPos.x << ", current pos: " << currentPos.x
         //           << "   " << dx << " " << dy << std::endl; 
-        
-        // keeping this in case i need it another time*/
+        // keeping this in case i need it another time
+*/
 
         return _isHit;
     }
