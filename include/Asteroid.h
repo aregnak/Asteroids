@@ -52,6 +52,8 @@ public:
 
         _velocity = sf::Vector2f((rand() % 200) - 100, (rand() % 200) - 100);
 
+        _rotateA = static_cast<float>(rand() % 200 - 100);
+
         _initialPos = rock.getPosition();
         //
         //
@@ -60,7 +62,8 @@ public:
     void update(sf::Time deltaTime)
     {
         rock.move(_velocity * deltaTime.asSeconds());
-        rock.rotate(rand() % (15 - 10 + 1) * deltaTime.asSeconds());
+
+        rock.rotate(_rotateA * deltaTime.asSeconds());
 
         sf::Vector2f newPos = rock.getPosition();
         if (newPos.x < 0)
@@ -80,7 +83,7 @@ public:
             newPos.y = 0;
         }
         rock.setPosition(newPos);
-        std::cout << _isSplit << std::endl;
+        // std::cout << _isSplit << std::endl;
     }
 
     void drawTo(sf::RenderWindow& window) const
@@ -144,4 +147,5 @@ private:
     sf::Vector2f _size;
     bool _isHit;
     bool _isSplit;
+    float _rotateA;
 };

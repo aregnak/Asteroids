@@ -27,7 +27,10 @@ int main()
 {
     // game window parameters
     sf::RenderWindow window(sf::VideoMode(800, 800), "Asteroids", sf::Style::Default,
-                            sf::ContextSettings(0, 0, 50));
+                            sf::ContextSettings(0, 0, 8));
+
+    window.setSize(sf::Vector2u(800, 800));
+
     srand(static_cast<unsigned>(time(0)));
 
     //player size
@@ -38,7 +41,7 @@ int main()
     sf::Clock timer;
     sf::Time shootCD = sf::milliseconds(200); // shooting cooldown
 
-    spawnAsteroids(rocks, 1, sf::Vector2f(50, 50), false);
+    spawnAsteroids(rocks, 3, sf::Vector2f(50, 50), false);
 
     while (window.isOpen())
     {
@@ -133,6 +136,13 @@ int main()
                                      [](const Asteroid& rock) { return rock.erase(); });
         int erasedCount = std::distance(newEnd, rocks.end());
         rocks.erase(newEnd, rocks.end());
+
+        if (erasedCount > 0 && rocks.size() < 9)
+        {
+            spawnAsteroids(rocks, 1, sf::Vector2f(50, 50), false);
+            std::cout << "number of rocks" << rocks.size() << std::endl;
+            //
+        }
 
         bullets.erase(std::remove_if(bullets.begin(), bullets.end(),
                                      [](const Bullet& bullet) { return bullet.hitRock(); }),
