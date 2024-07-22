@@ -42,8 +42,6 @@ public:
         down = false;
         left = false;
         right = false;
-
-        std::cout << "player rotation: " << sprite.getRotation() << std::endl;
     }
 
     void processEvent(sf::Keyboard::Key key, bool isPressed)

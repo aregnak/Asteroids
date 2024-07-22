@@ -15,6 +15,7 @@ class Bullet
 public:
     Bullet(sf::Vector2f position, float angle)
         : _isHit(false)
+        , _maxDist(399.f)
     {
         // get shooting direction
         float radianAngle = angle * M_PI / 180.0f;
@@ -24,11 +25,6 @@ public:
         pew.setPosition(position);
 
         _initialPos = pew.getPosition();
-        _maxDist = 399.0f; // set maximum travel distance before erase of bullet (px)
-
-        // debug stuff
-        //std::cout << "bullet angle: " << angle << " x vel: " << _velocity.x
-        //          << " y vel: " << _velocity.y << std::endl;
     }
 
     void update(sf::Time deltaTime)
@@ -83,12 +79,13 @@ public:
         return _isHit; //
     }
 
-    static bool canShoot(sf::Time cooldown)
+    static bool canShoot(sf::Time& lastShotTime, sf::Time cooldown)
     {
-        static sf::Clock timer;
-        if (timer.getElapsedTime() > cooldown)
+        sf::Time currentTime =
+            sf::Time::Zero + sf::seconds(static_cast<float>(clock()) / CLOCKS_PER_SEC);
+        if (currentTime - lastShotTime > cooldown)
         {
-            timer.restart();
+            lastShotTime = currentTime;
             return true;
         }
         return false;

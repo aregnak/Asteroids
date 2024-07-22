@@ -2,6 +2,7 @@
 #include <SFML/Graphics/CircleShape.hpp>
 #include <SFML/Graphics/Rect.hpp>
 #include <SFML/Graphics/Sprite.hpp>
+#include <SFML/Graphics/Texture.hpp>
 #include <SFML/System/Clock.hpp>
 #include <SFML/System/Time.hpp>
 #include <SFML/System/Vector2.hpp>
@@ -13,6 +14,9 @@
 #include "Player.h"
 #include "Bullet.h"
 #include "Asteroid.h"
+
+sf::Texture Asteroid::texture;
+bool Asteroid::textureLoaded = false;
 
 void spawnAsteroids(std::vector<Asteroid>& rocks, int count, sf::Vector2f rockSize, bool split,
                     sf::Vector2f position = sf::Vector2f())
@@ -29,8 +33,6 @@ int main()
     sf::RenderWindow window(sf::VideoMode(800, 800), "Asteroids", sf::Style::Default,
                             sf::ContextSettings(0, 0, 8));
 
-    window.setSize(sf::Vector2u(800, 800));
-
     srand(static_cast<unsigned>(time(0)));
 
     //player size
@@ -39,14 +41,17 @@ int main()
     std::vector<Asteroid> rocks;
 
     sf::Clock timer;
-    sf::Time shootCD = sf::milliseconds(200); // shooting cooldown
+    sf::Time shootCD = sf::microseconds(0);
+    sf::Time lastShotTime = sf::Time::Zero - shootCD;
+    // shooting cooldown
 
     spawnAsteroids(rocks, 3, sf::Vector2f(50, 50), false);
 
     while (window.isOpen())
     {
+        window.setSize(sf::Vector2u(800, 800));
         sf::Time deltaTime = timer.restart();
-
+        sf::Time shootCD = sf::milliseconds(200);
         sf::Event event;
         while (window.pollEvent(event))
         {
@@ -66,8 +71,8 @@ int main()
 
                 // key pressed for player movement
                 player.processEvent(event.key.code, true);
-
-                if (event.key.code == sf::Keyboard::Space && Bullet::canShoot(shootCD))
+                if (event.key.code == sf::Keyboard::Space &&
+                    Bullet::canShoot(lastShotTime, shootCD))
                 {
                     sf::Vector2f playerPos = player.getPlayerPos();
                     float playerDir = player.getPlayerDir();
@@ -80,11 +85,6 @@ int main()
             {
                 player.processEvent(event.key.code, false);
             }
-
-            //for (int rocksNum; rocksNum < 10; rocksNum++)
-            //{
-
-            //}
         }
         window.clear();
 
@@ -119,7 +119,7 @@ int main()
                         bullet.setHit();
                         spawnAsteroids(rocks, 2, sf::Vector2f(30, 30), true, rock.getPos());
                         rock.setSplit();
-                        std::cout << "rock hit and Split" << rock.canSplit() << std::endl;
+                        std::cout << "rock hit and Split" << std::endl;
                     }
 
                     std::cout << "rock hit (last)" << std::endl;
@@ -140,7 +140,7 @@ int main()
         if (erasedCount > 0 && rocks.size() < 9)
         {
             spawnAsteroids(rocks, 1, sf::Vector2f(50, 50), false);
-            std::cout << "number of rocks" << rocks.size() << std::endl;
+            std::cout << "number of rocks " << rocks.size() << std::endl;
             //
         }
 

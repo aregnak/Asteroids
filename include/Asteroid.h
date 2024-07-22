@@ -1,10 +1,14 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include <SFML/Graphics/CircleShape.hpp>
+#include <SFML/Graphics/Color.hpp>
+#include <SFML/Graphics/Rect.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/Shape.hpp>
 #include <SFML/Graphics/Sprite.hpp>
+#include <SFML/Graphics/Texture.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <cmath>
 #include <iostream>
@@ -41,10 +45,18 @@ public:
         {
             _position = position;
         }
+        if (!textureLoaded)
+        {
+            if (!texture.loadFromFile("res/asteroid.png"))
+            {
+                std::cout << "Asteroid texture loading failed" << std::endl;
+                system("pause");
+            }
+            textureLoaded = true;
+            std::cout << textureLoaded << std::endl;
+        }
 
-        //sf::Vector2f(rand() % (800 - 50 + 1) + 50, rand() % (800 - 50 + 1) + 50);
-
-        //_position = sf::Vector2f(350, 200);
+        rock.setTexture(&texture);
 
         rock.setSize(rockSize);
         rock.setPosition(_position);
@@ -55,8 +67,6 @@ public:
         _rotateA = static_cast<float>(rand() % 200 - 100);
 
         _initialPos = rock.getPosition();
-        //
-        //
     }
 
     void update(sf::Time deltaTime)
@@ -107,8 +117,9 @@ public:
 
         // std::cout << "Distance: " << distance << ", Max Distance: " << _maxDist
         //           << ", initial pos: " << _initialPos.x << ", current pos: " << currentPos.x
-        //           << "   " << dx << " " << dy << std::endl;
-*/
+        //           << "   " << dx << " " << dy << std::endl; 
+        
+        // keeping this in case i need it another time*/
 
         return _isHit;
     }
@@ -141,6 +152,7 @@ public:
 
 private:
     sf::RectangleShape rock;
+
     sf::Vector2f _position;
     sf::Vector2f _velocity;
     sf::Vector2f _initialPos;
@@ -148,4 +160,7 @@ private:
     bool _isHit;
     bool _isSplit;
     float _rotateA;
+
+    static sf::Texture texture;
+    static bool textureLoaded;
 };
