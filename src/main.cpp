@@ -43,10 +43,19 @@ int main()
     std::vector<Asteroid> rocks;
 
     sf::Font font;
+    if (!font.loadFromFile("res/font/Ubuntu-Regular.ttf"))
+    {
+        std::cout << "failed to load font gg go next" << std::endl;
+        system("pause");
+    }
+
     sf::Text text;
-    text.setString("TESTING");
-    //text.setCharacterSize(200);
-    //text.setPosition(400, 400);
+    text.setFont(font);
+    text.setString("GAME OVER!");
+    text.setCharacterSize(100);
+    text.setPosition(100, 300);
+
+    bool gameOver = false;
 
     sf::Clock timer;
 
@@ -168,6 +177,11 @@ int main()
 
                 std::cout << "player hit!" << std::endl;
                 std::cout << "HEALTH: " << player.getHealth() << std::endl;
+
+                if (player.getHealth() <= 0)
+                {
+                    gameOver = true;
+                }
             }
         }
         auto newEnd = std::remove_if(rocks.begin(), rocks.end(),
@@ -184,8 +198,10 @@ int main()
         bullets.erase(std::remove_if(bullets.begin(), bullets.end(),
                                      [](const Bullet& bullet) { return bullet.hitRock(); }),
                       bullets.end());
-
-        window.draw(text);
+        if (gameOver == true)
+        {
+            window.draw(text);
+        }
 
         window.display();
     }
