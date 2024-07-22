@@ -1,7 +1,9 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Graphics/CircleShape.hpp>
+#include <SFML/Graphics/Font.hpp>
 #include <SFML/Graphics/Rect.hpp>
 #include <SFML/Graphics/Sprite.hpp>
+#include <SFML/Graphics/Text.hpp>
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/System/Clock.hpp>
 #include <SFML/System/Time.hpp>
@@ -40,10 +42,18 @@ int main()
     std::vector<Bullet> bullets;
     std::vector<Asteroid> rocks;
 
+    sf::Text text;
+    text.setString("TESTING");
+    //text.setCharacterSize(200);
+    //text.setPosition(400, 400);
+
     sf::Clock timer;
+
+    // shooting cooldown
     sf::Time shootCD = sf::microseconds(0);
     sf::Time lastShotTime = sf::Time::Zero - shootCD;
-    // shooting cooldown
+
+    int destroyedRocks = 0;
 
     spawnAsteroids(rocks, 3, sf::Vector2f(50, 50), false);
 
@@ -119,17 +129,30 @@ int main()
                         bullet.setHit();
                         spawnAsteroids(rocks, 2, sf::Vector2f(30, 30), true, rock.getPos());
                         rock.setSplit();
-                        std::cout << "rock hit and Split" << std::endl;
                     }
-
-                    std::cout << "rock hit (last)" << std::endl;
+                    destroyedRocks++;
+                    std::cout << "killed a rock!! rocks destroyed: " << destroyedRocks << std::endl;
                 }
             }
 
             if (rock.collision(player.getShape()))
             {
                 rock.setHit();
+
+                // if it is big rock, -2 hp
+                if (!rock.canSplit())
+                {
+                    player.setHealth(-1.f);
+                }
+
+                //if small rock, -1 hp
+                else
+                {
+                    player.setHealth(-2.f);
+                }
+
                 std::cout << "player hit!" << std::endl;
+                std::cout << "HEALTH: " << player.getHealth() << std::endl;
             }
         }
         auto newEnd = std::remove_if(rocks.begin(), rocks.end(),
@@ -140,13 +163,14 @@ int main()
         if (erasedCount > 0 && rocks.size() < 9)
         {
             spawnAsteroids(rocks, 1, sf::Vector2f(50, 50), false);
-            std::cout << "number of rocks " << rocks.size() << std::endl;
-            //
+            std::cout << "number of rocks: " << rocks.size() << std::endl;
         }
 
         bullets.erase(std::remove_if(bullets.begin(), bullets.end(),
                                      [](const Bullet& bullet) { return bullet.hitRock(); }),
                       bullets.end());
+
+        window.draw(text);
 
         window.display();
     }

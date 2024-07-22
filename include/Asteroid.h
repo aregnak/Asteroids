@@ -118,7 +118,10 @@ public:
         // std::cout << "Distance: " << distance << ", Max Distance: " << _maxDist
         //           << ", initial pos: " << _initialPos.x << ", current pos: " << currentPos.x
         //           << "   " << dx << " " << dy << std::endl; 
-        // keeping this in case i need it another time
+
+        -------------------------------------------------
+        // keeping this in case i need it another time //
+        -------------------------------------------------
 */
 
         return _isHit;

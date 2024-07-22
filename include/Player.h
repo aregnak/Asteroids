@@ -13,6 +13,15 @@ class Player
 {
 public:
     Player(float x, float y)
+        : _health(10.f)
+        , _acceleration(0.0008f)
+        , _rotation(0.05f)
+        , _velocity(sf::Vector2f(0.0f, 0.0f))
+        , _maxspeed(1.5f)
+        , up(false)
+        , down(false)
+        , left(false)
+        , right(false)
     {
         rect.setSize(sf::Vector2f(x, y));
 
@@ -31,17 +40,6 @@ public:
         rect.setOrigin(rect.getLocalBounds().width / 2, rect.getLocalBounds().height / 2);
         rect.setPosition(sprite.getPosition().x,
                          sprite.getPosition().y - std::sin(sprite.getRotation()));
-
-        _acceleration = 0.0007f;
-        _rotation = 0.05f;
-
-        _velocity = sf::Vector2f(0.f, 0.f);
-        _maxspeed = 1.5f;
-
-        up = false;
-        down = false;
-        left = false;
-        right = false;
     }
 
     void processEvent(sf::Keyboard::Key key, bool isPressed)
@@ -164,11 +162,22 @@ public:
         return rect; //
     }
 
+    float getHealth()
+    {
+        return _health; //
+    }
+
+    float setHealth(float amount)
+    {
+        return _health += amount; //
+    }
+
 private:
     sf::RectangleShape rect; // hitbox of player (slightly smaller rectangle)
     sf::Texture texture; // player texture
     sf::Sprite sprite; // player sprite
 
+    float _health;
     float _acceleration;
     float _rotation;
     float _maxspeed;
