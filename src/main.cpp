@@ -42,6 +42,7 @@ int main()
     std::vector<Bullet> bullets;
     std::vector<Asteroid> rocks;
 
+    sf::Font font;
     sf::Text text;
     text.setString("TESTING");
     //text.setCharacterSize(200);
@@ -131,7 +132,21 @@ int main()
                         rock.setSplit();
                     }
                     destroyedRocks++;
-                    std::cout << "killed a rock!! rocks destroyed: " << destroyedRocks << std::endl;
+                    //std::cout << "killed a rock!! rocks destroyed: " << destroyedRocks << std::endl;
+                    std::cout << "NUMBER:: " << destroyedRocks % 10
+                              << " health: " << player.getHealth() << std::endl;
+
+                    if (destroyedRocks % 10 == 0)
+                    {
+                        if (player.getHealth() <= 8)
+                        {
+                            player.setHealth(2.f);
+                        }
+                        else if (player.getHealth() == 9)
+                        {
+                            player.setHealth(1.f);
+                        }
+                    }
                 }
             }
 
