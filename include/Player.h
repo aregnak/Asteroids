@@ -2,10 +2,12 @@
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Graphics/CircleShape.hpp>
+#include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Keyboard.hpp>
+#include <ctime>
 #include <iostream>
 #include <math.h>
 
@@ -176,6 +178,12 @@ public:
     {
         _health = 10.f;
         _velocity = sf::Vector2f(0, 0);
+    }
+
+    void takeDmg()
+    {
+        sprite.setColor(sf::Color(255, 0, 0, 255)); //
+        sprite.setColor(sf::Color(255, 255, 255, 255)); //
     }
 
 private:

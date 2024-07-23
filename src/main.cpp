@@ -84,6 +84,7 @@ int main()
     // won't insult your intelligence
     bool gameOver = false;
     bool pause = false;
+    bool mainMenu = true;
     int asteroidCnt = 0;
     sf::RectangleShape pauseBG;
 
@@ -125,12 +126,22 @@ int main()
                 }
 
                 // unpause
-                if (pause == true && event.key.code == sf::Keyboard::Escape)
+                if (pause && event.key.code == sf::Keyboard::Escape)
                 {
                     pause = false;
                     continue;
                 }
 
+                if (mainMenu && event.key.code == sf::Keyboard::Enter)
+                {
+                    mainMenu = false;
+                    player.reset();
+                    destroyedRocks = 0;
+                    bullets.clear();
+                    rocks.clear();
+                    spawnAsteroids(rocks, 3, sf::Vector2f(50, 50), false);
+                    continue;
+                }
                 if (gameOver && event.key.code == sf::Keyboard::Enter)
                 {
                     gameOver = false;
@@ -142,7 +153,7 @@ int main()
                     continue;
                 }
 
-                if (!gameOver && !pause)
+                if (!gameOver && !pause && !mainMenu)
                 {
                     // key pressed for player movement
                     player.processEvent(event.key.code, true);
@@ -164,7 +175,7 @@ int main()
 
         window.clear();
 
-        if (!gameOver && !pause)
+        if (!gameOver && !pause && !mainMenu)
         {
             player.update();
             player.drawTo(window);
@@ -233,6 +244,7 @@ int main()
                         player.setHealth(-2.f);
                     }
 
+                    player.takeDmg();
                     //std::cout << "player hit!" << std::endl;
                     //std::cout << "HEALTH: " << player.getHealth() << std::endl;
 
@@ -272,17 +284,24 @@ int main()
         }
         else
         {
-            if (!pause)
+            if (gameOver)
             {
                 gameStatusText.setString("Game Over!");
                 restartText.setString("press Enter to restart");
+                gameStatusText.setPosition(100, 300);
             }
-            else if (!gameOver)
+            else if (pause)
             {
                 gameStatusText.setString("Paused");
                 restartText.setString("");
                 gameStatusText.setPosition(100, 200);
                 window.draw(helpT);
+            }
+            else if (mainMenu)
+            {
+                gameStatusText.setString("Asteroids");
+                gameStatusText.setPosition(120, 300);
+                restartText.setString("press enter to start");
             }
 
             window.draw(gameStatusText);
