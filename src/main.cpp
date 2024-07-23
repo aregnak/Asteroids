@@ -11,6 +11,7 @@
 #include <SFML/Window/Keyboard.hpp>
 #include <SFML/Window/WindowStyle.hpp>
 #include <iostream>
+#include <string>
 #include <vector>
 
 #include "Player.h"
@@ -61,6 +62,16 @@ int main()
     restartText.setCharacterSize(40);
     restartText.setPosition(120, 450);
 
+    sf::Text healthT;
+    healthT.setFont(font);
+    healthT.setCharacterSize(40);
+    healthT.setPosition(30, 30);
+
+    sf::Text scoreT;
+    scoreT.setFont(font);
+    scoreT.setCharacterSize(30);
+    scoreT.setPosition(30, 80);
+
     // won't insult your intelligence
     bool gameOver = false;
 
@@ -102,7 +113,7 @@ int main()
                 if (gameOver && event.key.code == sf::Keyboard::Enter)
                 {
                     gameOver = false;
-                    player.setHealth(10.f);
+                    player.reset();
                     destroyedRocks = 0;
                     bullets.clear();
                     rocks.clear();
@@ -157,15 +168,17 @@ int main()
                 {
                     if (rock.collision(bullet.getShape()))
                     {
-                        rock.setHit();
                         if (rock.canSplit())
                         {
                             // split the big rock into 2 small rocks at big rock position
-                            rock.setHit();
-                            bullet.setHit();
+                            //  rock.setHit();
+                            // bullet.setHit();
                             spawnAsteroids(rocks, 2, sf::Vector2f(30, 30), true, rock.getPos());
                             rock.setSplit();
                         }
+
+                        rock.setHit();
+                        bullet.setHit();
                         destroyedRocks++;
                         //std::cout << "killed a rock!! rocks destroyed: " << destroyedRocks << std::endl;
                         std::cout << "NUMBER:: " << destroyedRocks % 10
@@ -224,6 +237,19 @@ int main()
             bullets.erase(std::remove_if(bullets.begin(), bullets.end(),
                                          [](const Bullet& bullet) { return bullet.hitRock(); }),
                           bullets.end());
+
+            // gets int of health and displays to screen
+            int healthFlt = player.getHealth();
+            std::string healthStr = "HP:" + std::to_string(healthFlt);
+            healthT.setString(healthStr);
+
+            // score int to string
+            std::string score = "Score:" + std::to_string(destroyedRocks);
+            scoreT.setString(score);
+
+            // display score and health
+            window.draw(healthT);
+            window.draw(scoreT);
         }
         else
         {

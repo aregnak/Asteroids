@@ -13,7 +13,7 @@ class Player
 {
 public:
     Player(float x, float y)
-        : _health(1.f)
+        : _health(10.f)
         , _acceleration(0.0008f)
         , _rotation(0.05f)
         , _velocity(sf::Vector2f(0.0f, 0.0f))
@@ -170,6 +170,12 @@ public:
     float setHealth(float amount)
     {
         return _health += amount; //
+    }
+
+    void reset()
+    {
+        _health = 10.f;
+        _velocity = sf::Vector2f(0, 0);
     }
 
 private:
