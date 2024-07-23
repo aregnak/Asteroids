@@ -52,11 +52,11 @@ int main()
         system("pause");
     }
 
-    sf::Text gameOverText;
-    gameOverText.setFont(font);
-    gameOverText.setString("GAME OVER!");
-    gameOverText.setCharacterSize(100);
-    gameOverText.setPosition(100, 300);
+    sf::Text gameStatusText;
+    gameStatusText.setFont(font);
+    gameStatusText.setString("GAME OVER!");
+    gameStatusText.setCharacterSize(100);
+    gameStatusText.setPosition(100, 300);
 
     sf::Text restartText;
     restartText.setFont(font);
@@ -73,6 +73,13 @@ int main()
     scoreT.setFont(font);
     scoreT.setCharacterSize(30);
     scoreT.setPosition(30, 80);
+
+    sf::Text helpT;
+    helpT.setFont(font);
+    helpT.setString(
+        "Directions:\nWASD/Arrows to move, space to shoot\nEvery 10 score get 2 health back");
+    helpT.setCharacterSize(20);
+    helpT.setPosition(100, 350);
 
     // won't insult your intelligence
     bool gameOver = false;
@@ -267,15 +274,18 @@ int main()
         {
             if (!pause)
             {
-                gameOverText.setString("Game Over!");
+                gameStatusText.setString("Game Over!");
                 restartText.setString("press Enter to restart");
             }
             else if (!gameOver)
             {
-                gameOverText.setString("Paused");
+                gameStatusText.setString("Paused");
                 restartText.setString("");
+                gameStatusText.setPosition(100, 200);
+                window.draw(helpT);
             }
-            window.draw(gameOverText);
+
+            window.draw(gameStatusText);
             window.draw(restartText);
         }
 
