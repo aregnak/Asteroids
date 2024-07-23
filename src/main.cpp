@@ -184,6 +184,7 @@ int main()
                     {
                         if (rock.canSplit())
                         {
+                            rock.setHit();
                             spawnAsteroids(rocks, 2, sf::Vector2f(30, 30), true, rock.getPos());
                             rock.setSplit();
                         }
@@ -192,8 +193,8 @@ int main()
                         bullet.setHit();
                         destroyedRocks++;
                         //std::cout << "killed a rock!! rocks destroyed: " << destroyedRocks << std::endl;
-                        std::cout << "NUMBER:: " << destroyedRocks % 10
-                                  << " health: " << player.getHealth() << std::endl;
+                        //std::cout << "NUMBER:: " << destroyedRocks % 10
+                        //          << " health: " << player.getHealth() << std::endl;
 
                         if (destroyedRocks % 10 == 0)
                         {
@@ -225,8 +226,8 @@ int main()
                         player.setHealth(-2.f);
                     }
 
-                    std::cout << "player hit!" << std::endl;
-                    std::cout << "HEALTH: " << player.getHealth() << std::endl;
+                    //std::cout << "player hit!" << std::endl;
+                    //std::cout << "HEALTH: " << player.getHealth() << std::endl;
 
                     if (player.getHealth() <= 0)
                     {
