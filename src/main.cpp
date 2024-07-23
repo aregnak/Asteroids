@@ -1,7 +1,9 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Graphics/CircleShape.hpp>
+#include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/Font.hpp>
 #include <SFML/Graphics/Rect.hpp>
+#include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Text.hpp>
 #include <SFML/Graphics/Texture.hpp>
@@ -74,6 +76,9 @@ int main()
 
     // won't insult your intelligence
     bool gameOver = false;
+    bool pause = false;
+    int asteroidCnt = 0;
+    sf::RectangleShape pauseBG;
 
     sf::Clock timer;
 
@@ -105,9 +110,18 @@ int main()
             // escape to close window
             else if (event.type == event.KeyPressed)
             {
-                if (event.key.code == sf::Keyboard::Escape)
+                //pause
+                if (!pause && event.key.code == sf::Keyboard::Escape)
                 {
-                    window.close();
+                    pause = true;
+                    continue;
+                }
+
+                // unpause
+                if (pause == true && event.key.code == sf::Keyboard::Escape)
+                {
+                    pause = false;
+                    continue;
                 }
 
                 if (gameOver && event.key.code == sf::Keyboard::Enter)
@@ -121,7 +135,7 @@ int main()
                     continue;
                 }
 
-                if (!gameOver)
+                if (!gameOver && !pause)
                 {
                     // key pressed for player movement
                     player.processEvent(event.key.code, true);
@@ -143,7 +157,7 @@ int main()
 
         window.clear();
 
-        if (!gameOver)
+        if (!gameOver && !pause)
         {
             player.update();
             player.drawTo(window);
@@ -170,9 +184,6 @@ int main()
                     {
                         if (rock.canSplit())
                         {
-                            // split the big rock into 2 small rocks at big rock position
-                            //  rock.setHit();
-                            // bullet.setHit();
                             spawnAsteroids(rocks, 2, sf::Vector2f(30, 30), true, rock.getPos());
                             rock.setSplit();
                         }
@@ -253,6 +264,16 @@ int main()
         }
         else
         {
+            if (!pause)
+            {
+                gameOverText.setString("Game Over!");
+                restartText.setString("press Enter to restart");
+            }
+            else if (!gameOver)
+            {
+                gameOverText.setString("Paused");
+                restartText.setString("");
+            }
             window.draw(gameOverText);
             window.draw(restartText);
         }
