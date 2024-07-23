@@ -43,18 +43,25 @@ int main()
     std::vector<Asteroid> rocks;
 
     sf::Font font;
-    if (!font.loadFromFile("res/font/Ubuntu-Regular.ttf"))
+    if (!font.loadFromFile("res/font/Hyperspace Bold.otf"))
     {
         std::cout << "failed to load font gg go next" << std::endl;
         system("pause");
     }
 
-    sf::Text text;
-    text.setFont(font);
-    text.setString("GAME OVER!");
-    text.setCharacterSize(100);
-    text.setPosition(100, 300);
+    sf::Text gameOverText;
+    gameOverText.setFont(font);
+    gameOverText.setString("GAME OVER!");
+    gameOverText.setCharacterSize(100);
+    gameOverText.setPosition(100, 300);
 
+    sf::Text restartText;
+    restartText.setFont(font);
+    restartText.setString("press Enter to restart");
+    restartText.setCharacterSize(40);
+    restartText.setPosition(120, 450);
+
+    // won't insult your intelligence
     bool gameOver = false;
 
     sf::Clock timer;
@@ -69,9 +76,12 @@ int main()
 
     while (window.isOpen())
     {
+        // make the window size unchangeable
         window.setSize(sf::Vector2u(800, 800));
+
         sf::Time deltaTime = timer.restart();
         sf::Time shootCD = sf::milliseconds(200);
+
         sf::Event event;
         while (window.pollEvent(event))
         {
@@ -89,118 +99,136 @@ int main()
                     window.close();
                 }
 
-                // key pressed for player movement
-                player.processEvent(event.key.code, true);
-                if (event.key.code == sf::Keyboard::Space &&
-                    Bullet::canShoot(lastShotTime, shootCD))
+                if (gameOver && event.key.code == sf::Keyboard::Enter)
                 {
-                    sf::Vector2f playerPos = player.getPlayerPos();
-                    float playerDir = player.getPlayerDir();
+                    gameOver = false;
+                    player.setHealth(10.f);
+                    destroyedRocks = 0;
+                    bullets.clear();
+                    rocks.clear();
+                    spawnAsteroids(rocks, 3, sf::Vector2f(50, 50), false);
+                    continue;
+                }
 
-                    bullets.push_back(Bullet(playerPos, playerDir));
+                if (!gameOver)
+                {
+                    // key pressed for player movement
+                    player.processEvent(event.key.code, true);
+                    if (event.key.code == sf::Keyboard::Space &&
+                        Bullet::canShoot(lastShotTime, shootCD))
+                    {
+                        sf::Vector2f playerPos = player.getPlayerPos();
+                        float playerDir = player.getPlayerDir();
+
+                        bullets.push_back(Bullet(playerPos, playerDir));
+                    }
                 }
             }
-
             else if (event.type == event.KeyReleased)
             {
                 player.processEvent(event.key.code, false);
             }
         }
+
         window.clear();
 
-        player.update();
-        player.drawTo(window);
-
-        for (Bullet& bullet : bullets)
+        if (!gameOver)
         {
-            bullet.update(deltaTime);
-            bullet.drawTo(window);
-        }
-
-        // erase bullets if bullet.erase() is true
-        bullets.erase(std::remove_if(bullets.begin(), bullets.end(),
-                                     [](const Bullet& bullet) { return bullet.erase(); }),
-                      bullets.end());
-
-        for (Asteroid& rock : rocks)
-        {
-            rock.update(deltaTime);
-            rock.drawTo(window);
+            player.update();
+            player.drawTo(window);
 
             for (Bullet& bullet : bullets)
             {
-                if (rock.collision(bullet.getShape()))
+                bullet.update(deltaTime);
+                bullet.drawTo(window);
+            }
+
+            // erase bullets if bullet.erase() is true
+            bullets.erase(std::remove_if(bullets.begin(), bullets.end(),
+                                         [](const Bullet& bullet) { return bullet.erase(); }),
+                          bullets.end());
+
+            for (Asteroid& rock : rocks)
+            {
+                rock.update(deltaTime);
+                rock.drawTo(window);
+
+                for (Bullet& bullet : bullets)
+                {
+                    if (rock.collision(bullet.getShape()))
+                    {
+                        rock.setHit();
+                        if (rock.canSplit())
+                        {
+                            // split the big rock into 2 small rocks at big rock position
+                            rock.setHit();
+                            bullet.setHit();
+                            spawnAsteroids(rocks, 2, sf::Vector2f(30, 30), true, rock.getPos());
+                            rock.setSplit();
+                        }
+                        destroyedRocks++;
+                        //std::cout << "killed a rock!! rocks destroyed: " << destroyedRocks << std::endl;
+                        std::cout << "NUMBER:: " << destroyedRocks % 10
+                                  << " health: " << player.getHealth() << std::endl;
+
+                        if (destroyedRocks % 10 == 0)
+                        {
+                            if (player.getHealth() <= 8)
+                            {
+                                player.setHealth(2.f);
+                            }
+                            else if (player.getHealth() == 9)
+                            {
+                                player.setHealth(1.f);
+                            }
+                        }
+                    }
+                }
+
+                if (rock.collision(player.getShape()))
                 {
                     rock.setHit();
-                    if (rock.canSplit())
-                    {
-                        // split the big rock into 2 small rocks at big rock position
-                        rock.setHit();
-                        bullet.setHit();
-                        spawnAsteroids(rocks, 2, sf::Vector2f(30, 30), true, rock.getPos());
-                        rock.setSplit();
-                    }
-                    destroyedRocks++;
-                    //std::cout << "killed a rock!! rocks destroyed: " << destroyedRocks << std::endl;
-                    std::cout << "NUMBER:: " << destroyedRocks % 10
-                              << " health: " << player.getHealth() << std::endl;
 
-                    if (destroyedRocks % 10 == 0)
+                    // if it is big rock, -2 hp
+                    if (!rock.canSplit())
                     {
-                        if (player.getHealth() <= 8)
-                        {
-                            player.setHealth(2.f);
-                        }
-                        else if (player.getHealth() == 9)
-                        {
-                            player.setHealth(1.f);
-                        }
+                        player.setHealth(-1.f);
+                    }
+
+                    //if small rock, -1 hp
+                    else
+                    {
+                        player.setHealth(-2.f);
+                    }
+
+                    std::cout << "player hit!" << std::endl;
+                    std::cout << "HEALTH: " << player.getHealth() << std::endl;
+
+                    if (player.getHealth() <= 0)
+                    {
+                        gameOver = true;
                     }
                 }
             }
+            auto newEnd = std::remove_if(rocks.begin(), rocks.end(),
+                                         [](const Asteroid& rock) { return rock.erase(); });
+            int erasedCount = std::distance(newEnd, rocks.end());
+            rocks.erase(newEnd, rocks.end());
 
-            if (rock.collision(player.getShape()))
+            if (erasedCount > 0 && rocks.size() < 9)
             {
-                rock.setHit();
-
-                // if it is big rock, -2 hp
-                if (!rock.canSplit())
-                {
-                    player.setHealth(-1.f);
-                }
-
-                //if small rock, -1 hp
-                else
-                {
-                    player.setHealth(-2.f);
-                }
-
-                std::cout << "player hit!" << std::endl;
-                std::cout << "HEALTH: " << player.getHealth() << std::endl;
-
-                if (player.getHealth() <= 0)
-                {
-                    gameOver = true;
-                }
+                spawnAsteroids(rocks, 1, sf::Vector2f(50, 50), false);
+                std::cout << "number of rocks: " << rocks.size() << std::endl;
             }
-        }
-        auto newEnd = std::remove_if(rocks.begin(), rocks.end(),
-                                     [](const Asteroid& rock) { return rock.erase(); });
-        int erasedCount = std::distance(newEnd, rocks.end());
-        rocks.erase(newEnd, rocks.end());
 
-        if (erasedCount > 0 && rocks.size() < 9)
-        {
-            spawnAsteroids(rocks, 1, sf::Vector2f(50, 50), false);
-            std::cout << "number of rocks: " << rocks.size() << std::endl;
+            bullets.erase(std::remove_if(bullets.begin(), bullets.end(),
+                                         [](const Bullet& bullet) { return bullet.hitRock(); }),
+                          bullets.end());
         }
-
-        bullets.erase(std::remove_if(bullets.begin(), bullets.end(),
-                                     [](const Bullet& bullet) { return bullet.hitRock(); }),
-                      bullets.end());
-        if (gameOver == true)
+        else
         {
-            window.draw(text);
+            window.draw(gameOverText);
+            window.draw(restartText);
         }
 
         window.display();

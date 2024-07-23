@@ -13,7 +13,7 @@ class Player
 {
 public:
     Player(float x, float y)
-        : _health(10.f)
+        : _health(1.f)
         , _acceleration(0.0008f)
         , _rotation(0.05f)
         , _velocity(sf::Vector2f(0.0f, 0.0f))
