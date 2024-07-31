@@ -18,10 +18,10 @@ class Player
 public:
     Player(float x, float y)
         : _health(10.f)
-        , _acceleration(0.0008f)
-        , _rotation(0.05f)
+        , _acceleration(160.f)
+        , _rotation(150.f)
         , _velocity(sf::Vector2f(0.0f, 0.0f))
-        , _maxspeed(1.5f)
+        , _maxspeed(200.f)
         , _isHit(false)
         , up(false)
         , down(false)
@@ -54,8 +54,6 @@ public:
     void processEvent(sf::Keyboard::Key key, bool isPressed)
     {
         std::cout << isPressed << std::endl;
-        //if (isPressed == true)
-        //{
         if (key == sf::Keyboard::W || key == sf::Keyboard::Up)
         {
             up = isPressed;
@@ -75,22 +73,22 @@ public:
         {
             right = isPressed;
         }
-        //}
     }
 
-    void update(sf::Time deltaTime)
+    void update(sf::Time& deltaTime)
     {
         sf::Vector2f movement;
 
-        // thrust movement
-        if (up)
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) ||
+            sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
         {
             sf::Vector2f direction = sf::Vector2f(std::cos(sprite.getRotation() * M_PI / 180.0f),
                                                   std::sin(sprite.getRotation() * M_PI / 180.0f));
 
             _velocity -= direction * _acceleration * deltaTime.asSeconds();
         }
-        if (down)
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) ||
+            sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
         {
             sf::Vector2f direction = sf::Vector2f(std::cos(sprite.getRotation() * M_PI / 180.0f),
                                                   std::sin(sprite.getRotation() * M_PI / 180.0f));
@@ -99,15 +97,17 @@ public:
         }
 
         // rotation
-        if (left)
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) ||
+            sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
         {
             sprite.rotate(-_rotation * deltaTime.asSeconds());
             rect.rotate(-_rotation * deltaTime.asSeconds());
         }
-        if (right)
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) ||
+            sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
         {
-            sprite.rotate(_rotation);
-            rect.rotate(_rotation);
+            sprite.rotate(_rotation * deltaTime.asSeconds());
+            rect.rotate(_rotation * deltaTime.asSeconds());
         }
 
         // never surpass max speed
@@ -117,8 +117,14 @@ public:
             _velocity *= _maxspeed / _speed;
         }
 
-        rect.move(_velocity * 90.f); // move hitbox
-        sprite.move(_velocity * 90.f); // move sprite
+        std::cout << "old vel: " << _velocity.x << "    " << _velocity.y << std::endl;
+
+        sf::Vector2f newVel =
+            sf::Vector2f(_velocity.x * deltaTime.asSeconds(), _velocity.y * deltaTime.asSeconds());
+        rect.move(newVel); // move hitbox
+        sprite.move(newVel); // move sprite
+
+        //std::cout << "new vel: " << newVel.x << "    " << newVel.y << std::endl;
 
         // teleport player to opposite side if out of play area
         if (rect.getPosition().x <= -15)
@@ -165,7 +171,7 @@ public:
     void drawTo(sf::RenderWindow& window)
     {
         window.draw(sprite);
-        //window.draw(rect);
+        window.draw(rect);
     }
 
     sf::Vector2f getPlayerPos()

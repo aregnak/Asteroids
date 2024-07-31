@@ -42,7 +42,7 @@ int main()
     sf::RenderWindow window(sf::VideoMode(800, 800), "Asteroids", sf::Style::Default,
                             sf::ContextSettings(0, 0, 8));
 
-    //window.setFramerateLimit(60);
+    window.setFramerateLimit(60);
 
     srand(static_cast<unsigned>(time(0)));
 
@@ -96,9 +96,6 @@ int main()
 
     sf::Clock timer;
 
-    const int maxFPS = 60;
-    sf::Time frameDuration = sf::seconds(1.f / maxFPS);
-
     // shooting cooldown
     sf::Time shootCD = sf::microseconds(200);
     sf::Time lastShotTime = sf::Time::Zero - shootCD;
@@ -114,6 +111,8 @@ int main()
 
         sf::Time deltaTime = timer.restart();
         sf::Time shootCD = sf::milliseconds(200);
+
+        //std::cout << deltaTime.asSeconds() << std::endl;
 
         sf::Event event;
         while (window.pollEvent(event))
@@ -165,7 +164,7 @@ int main()
                 if (!gameOver && !pause && !mainMenu)
                 {
                     // key pressed for player movement
-                    player.processEvent(event.key.code, true);
+                    // player.processEvent(event.key.code, true);
                     if (event.key.code == sf::Keyboard::Space &&
                         Bullet::canShoot(lastShotTime, shootCD))
                     {
@@ -178,7 +177,7 @@ int main()
             }
             else if (event.type == sf::Event::KeyReleased)
             {
-                player.processEvent(event.key.code, false);
+                // player.processEvent(event.key.code, false);
             }
         }
 
