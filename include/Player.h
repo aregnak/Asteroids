@@ -27,6 +27,8 @@ public:
         , down(false)
         , left(false)
         , right(false)
+        , damageCD(sf::seconds(0.1f))
+        , currentTime(sf::Time::Zero)
     {
         rect.setSize(sf::Vector2f(x, y));
 
@@ -42,9 +44,6 @@ public:
         sprite.setPosition(400, 400);
         sprite.setOrigin(sprite.getLocalBounds().width / 2, sprite.getLocalBounds().height / 2);
         sprite.setColor(sf::Color::White);
-
-        damageCD = sf::microseconds(200);
-        damageTimer = sf::Time::Zero - damageCD;
 
         rect.setOrigin(rect.getLocalBounds().width / 2, rect.getLocalBounds().height / 2);
         rect.setPosition(sprite.getPosition().x,
@@ -120,30 +119,31 @@ public:
             sprite.setPosition(rect.getPosition().x, rect.getPosition().y);
         }
 
-        //if (!_isHit)
-        //{
-        //    rect.setFillColor(sf::Color::White);
-        //}
+        std::cout << clock.getElapsedTime().asSeconds() << std::endl;
         if (_isHit)
         {
-            sf::Time currentTime =
-                sf::Time::Zero + sf::seconds(static_cast<float>(clock()) / CLOCKS_PER_SEC);
-            if (currentTime - damageTimer >= damageCD)
+            if (clock.getElapsedTime().asSeconds() > currentTime.asSeconds() + damageCD.asSeconds())
             {
                 sprite.setColor(sf::Color::White);
-                _isHit = false;
+                //std::cout << "hit" << std::endl;
             }
-            else
-            {
-                sprite.setColor(sf::Color::Red);
-            }
+            std::cout << currentTime.asSeconds() << "   " << damageCD.asSeconds() << "    "
+                      << clock.getElapsedTime().asSeconds() << std::endl;
         }
+    }
+
+    void hit()
+    {
+        _isHit = true;
+        sprite.setColor(sf::Color::Red);
+        currentTime = clock.getElapsedTime();
+        //sprite.setColor(sf::Color::White);
     }
 
     void drawTo(sf::RenderWindow& window)
     {
         window.draw(sprite);
-        window.draw(rect);
+        //window.draw(rect);
     }
 
     sf::Vector2f getPlayerPos()
@@ -176,9 +176,11 @@ public:
     {
         _health = 10.f;
         _velocity = sf::Vector2f(0, 0);
+        sprite.setPosition(sf::Vector2f(400, 400));
+        rect.setPosition(sf::Vector2f(400, 400));
+        sprite.setRotation(0.f);
+        rect.setRotation(0.f);
     }
-
-    void takeDmg() { _isHit = true; }
 
 private:
     sf::RectangleShape rect; // hitbox of player (slightly smaller rectangle)
@@ -190,9 +192,11 @@ private:
     float _rotation;
     float _maxspeed;
     sf::Vector2f _velocity;
+
     bool _isHit;
     sf::Time damageCD;
-    sf::Time damageTimer;
+    sf::Time currentTime;
+    sf::Clock clock;
 
     bool up;
     bool down;

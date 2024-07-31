@@ -245,7 +245,7 @@ int main()
                         player.setHealth(-2.f);
                     }
 
-                    player.takeDmg();
+                    player.hit();
                     //std::cout << "player hit!" << std::endl;
                     //std::cout << "HEALTH: " << player.getHealth() << std::endl;
 
