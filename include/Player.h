@@ -5,6 +5,8 @@
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/Sprite.hpp>
+#include <SFML/System/Clock.hpp>
+#include <SFML/System/Time.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <ctime>
@@ -20,6 +22,7 @@ public:
         , _rotation(0.05f)
         , _velocity(sf::Vector2f(0.0f, 0.0f))
         , _maxspeed(1.5f)
+        , _isHit(false)
         , up(false)
         , down(false)
         , left(false)
@@ -38,6 +41,10 @@ public:
         sprite.setScale(0.35, 0.35);
         sprite.setPosition(400, 400);
         sprite.setOrigin(sprite.getLocalBounds().width / 2, sprite.getLocalBounds().height / 2);
+        sprite.setColor(sf::Color::White);
+
+        damageCD = sf::microseconds(200);
+        damageTimer = sf::Time::Zero - damageCD;
 
         rect.setOrigin(rect.getLocalBounds().width / 2, rect.getLocalBounds().height / 2);
         rect.setPosition(sprite.getPosition().x,
@@ -46,38 +53,32 @@ public:
 
     void processEvent(sf::Keyboard::Key key, bool isPressed)
     {
-        if (isPressed == true)
+        std::cout << isPressed << std::endl;
+        //if (isPressed == true)
+        //{
+        if (key == sf::Keyboard::W || key == sf::Keyboard::Up)
         {
-            if (key == sf::Keyboard::W || key == sf::Keyboard::Up)
-            {
-                up = true;
-            }
-
-            if (key == sf::Keyboard::S || key == sf::Keyboard::Down)
-            {
-                down = true;
-            }
-
-            if (key == sf::Keyboard::A || key == sf::Keyboard::Left)
-            {
-                left = true;
-            }
-
-            if (key == sf::Keyboard::D || key == sf::Keyboard::Right)
-            {
-                right = true;
-            }
+            up = isPressed;
         }
-        else
+
+        if (key == sf::Keyboard::S || key == sf::Keyboard::Down)
         {
-            up = false;
-            down = false;
-            left = false;
-            right = false;
+            down = isPressed;
         }
+
+        if (key == sf::Keyboard::A || key == sf::Keyboard::Left)
+        {
+            left = isPressed;
+        }
+
+        if (key == sf::Keyboard::D || key == sf::Keyboard::Right)
+        {
+            right = isPressed;
+        }
+        //}
     }
 
-    void update()
+    void update(sf::Time deltaTime)
     {
         sf::Vector2f movement;
 
@@ -87,21 +88,21 @@ public:
             sf::Vector2f direction = sf::Vector2f(std::cos(sprite.getRotation() * M_PI / 180.0f),
                                                   std::sin(sprite.getRotation() * M_PI / 180.0f));
 
-            _velocity -= direction * _acceleration;
+            _velocity -= direction * _acceleration * deltaTime.asSeconds();
         }
         if (down)
         {
             sf::Vector2f direction = sf::Vector2f(std::cos(sprite.getRotation() * M_PI / 180.0f),
                                                   std::sin(sprite.getRotation() * M_PI / 180.0f));
 
-            _velocity += direction * _acceleration;
+            _velocity += direction * _acceleration * deltaTime.asSeconds();
         }
 
         // rotation
         if (left)
         {
-            sprite.rotate(-_rotation);
-            rect.rotate(-_rotation);
+            sprite.rotate(-_rotation * deltaTime.asSeconds());
+            rect.rotate(-_rotation * deltaTime.asSeconds());
         }
         if (right)
         {
@@ -116,8 +117,8 @@ public:
             _velocity *= _maxspeed / _speed;
         }
 
-        rect.move(_velocity / 50.0f); // move hitbox
-        sprite.move(_velocity / 50.0f); // move sprite
+        rect.move(_velocity * 90.f); // move hitbox
+        sprite.move(_velocity * 90.f); // move sprite
 
         // teleport player to opposite side if out of play area
         if (rect.getPosition().x <= -15)
@@ -139,6 +140,25 @@ public:
         {
             rect.setPosition(rect.getPosition().x, rect.getPosition().y - 825);
             sprite.setPosition(rect.getPosition().x, rect.getPosition().y);
+        }
+
+        //if (!_isHit)
+        //{
+        //    rect.setFillColor(sf::Color::White);
+        //}
+        if (_isHit)
+        {
+            sf::Time currentTime =
+                sf::Time::Zero + sf::seconds(static_cast<float>(clock()) / CLOCKS_PER_SEC);
+            if (currentTime - damageTimer >= damageCD)
+            {
+                sprite.setColor(sf::Color::White);
+                _isHit = false;
+            }
+            else
+            {
+                sprite.setColor(sf::Color::Red);
+            }
         }
     }
 
@@ -180,11 +200,7 @@ public:
         _velocity = sf::Vector2f(0, 0);
     }
 
-    void takeDmg()
-    {
-        sprite.setColor(sf::Color(255, 0, 0, 255)); //
-        sprite.setColor(sf::Color(255, 255, 255, 255)); //
-    }
+    void takeDmg() { _isHit = true; }
 
 private:
     sf::RectangleShape rect; // hitbox of player (slightly smaller rectangle)
@@ -196,6 +212,9 @@ private:
     float _rotation;
     float _maxspeed;
     sf::Vector2f _velocity;
+    bool _isHit;
+    sf::Time damageCD;
+    sf::Time damageTimer;
 
     bool up;
     bool down;

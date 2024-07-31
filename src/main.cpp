@@ -8,10 +8,14 @@
 #include <SFML/Graphics/Text.hpp>
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/System/Clock.hpp>
+#include <SFML/System/Sleep.hpp>
 #include <SFML/System/Time.hpp>
 #include <SFML/System/Vector2.hpp>
+#include <SFML/Window/Event.hpp>
 #include <SFML/Window/Keyboard.hpp>
+#include <SFML/Window/Window.hpp>
 #include <SFML/Window/WindowStyle.hpp>
+#include <ctime>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -37,6 +41,8 @@ int main()
     // game window parameters
     sf::RenderWindow window(sf::VideoMode(800, 800), "Asteroids", sf::Style::Default,
                             sf::ContextSettings(0, 0, 8));
+
+    //window.setFramerateLimit(60);
 
     srand(static_cast<unsigned>(time(0)));
 
@@ -90,8 +96,11 @@ int main()
 
     sf::Clock timer;
 
+    const int maxFPS = 60;
+    sf::Time frameDuration = sf::seconds(1.f / maxFPS);
+
     // shooting cooldown
-    sf::Time shootCD = sf::microseconds(0);
+    sf::Time shootCD = sf::microseconds(200);
     sf::Time lastShotTime = sf::Time::Zero - shootCD;
 
     int destroyedRocks = 0;
@@ -116,7 +125,7 @@ int main()
             }
 
             // escape to close window
-            else if (event.type == event.KeyPressed)
+            else if (event.type == sf::Event::KeyPressed)
             {
                 //pause
                 if (!pause && event.key.code == sf::Keyboard::Escape)
@@ -167,7 +176,7 @@ int main()
                     }
                 }
             }
-            else if (event.type == event.KeyReleased)
+            else if (event.type == sf::Event::KeyReleased)
             {
                 player.processEvent(event.key.code, false);
             }
@@ -177,7 +186,7 @@ int main()
 
         if (!gameOver && !pause && !mainMenu)
         {
-            player.update();
+            player.update(deltaTime);
             player.drawTo(window);
 
             for (Bullet& bullet : bullets)
