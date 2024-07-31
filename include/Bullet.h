@@ -79,17 +79,18 @@ public:
         return _isHit; //
     }
 
-    static bool canShoot(sf::Time& lastShotTime, sf::Time cooldown)
+    /*static bool canShoot(sf::Time& lastShotTime, sf::Time cooldown)
     {
         sf::Time currentTime =
             sf::Time::Zero + sf::seconds(static_cast<float>(clock()) / CLOCKS_PER_SEC);
-        if (currentTime - lastShotTime > cooldown)
+
+        if ((currentTime - lastShotTime) > cooldown)
         {
             lastShotTime = currentTime;
             return true;
         }
         return false;
-    }
+    }*/
 
     const sf::CircleShape& getShape() const
     {

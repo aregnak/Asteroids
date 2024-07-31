@@ -91,14 +91,13 @@ int main()
     bool gameOver = false;
     bool pause = false;
     bool mainMenu = true;
-    int asteroidCnt = 0;
     sf::RectangleShape pauseBG;
 
     sf::Clock timer;
+    sf::Clock gameClock;
 
-    // shooting cooldown
-    sf::Time shootCD = sf::microseconds(200);
-    sf::Time lastShotTime = sf::Time::Zero - shootCD;
+    sf::Time shootCooldown = sf::seconds(0.2f); // Set your cooldown here
+    sf::Time lastShotTime = sf::Time::Zero - shootCooldown;
 
     int destroyedRocks = 0;
 
@@ -110,9 +109,6 @@ int main()
         window.setSize(sf::Vector2u(800, 800));
 
         sf::Time deltaTime = timer.restart();
-        sf::Time shootCD = sf::milliseconds(200);
-
-        //std::cout << deltaTime.asSeconds() << std::endl;
 
         sf::Event event;
         while (window.pollEvent(event))
@@ -134,13 +130,13 @@ int main()
                 }
 
                 // unpause
-                if (pause && event.key.code == sf::Keyboard::Escape)
+                else if (pause && event.key.code == sf::Keyboard::Escape)
                 {
                     pause = false;
                     continue;
                 }
 
-                if (mainMenu && event.key.code == sf::Keyboard::Enter)
+                else if (mainMenu && event.key.code == sf::Keyboard::Enter)
                 {
                     mainMenu = false;
                     player.reset();
@@ -150,7 +146,7 @@ int main()
                     spawnAsteroids(rocks, 3, sf::Vector2f(50, 50), false);
                     continue;
                 }
-                if (gameOver && event.key.code == sf::Keyboard::Enter)
+                else if (gameOver && event.key.code == sf::Keyboard::Enter)
                 {
                     gameOver = false;
                     player.reset();
@@ -160,24 +156,21 @@ int main()
                     spawnAsteroids(rocks, 3, sf::Vector2f(50, 50), false);
                     continue;
                 }
-
-                if (!gameOver && !pause && !mainMenu)
+                else if (!gameOver && !pause && !mainMenu)
                 {
-                    // key pressed for player movement
-                    // player.processEvent(event.key.code, true);
-                    if (event.key.code == sf::Keyboard::Space &&
-                        Bullet::canShoot(lastShotTime, shootCD))
+                    if (event.key.code == sf::Keyboard::Space)
                     {
-                        sf::Vector2f playerPos = player.getPlayerPos();
-                        float playerDir = player.getPlayerDir();
+                        sf::Time currentTime = sf::Time::Zero + gameClock.getElapsedTime();
+                        if (currentTime - lastShotTime >= shootCooldown)
+                        {
+                            sf::Vector2f playerPos = player.getPlayerPos();
+                            float playerDir = player.getPlayerDir();
 
-                        bullets.push_back(Bullet(playerPos, playerDir));
+                            bullets.push_back(Bullet(playerPos, playerDir));
+                            lastShotTime = currentTime; // Update last shot time
+                        }
                     }
                 }
-            }
-            else if (event.type == sf::Event::KeyReleased)
-            {
-                // player.processEvent(event.key.code, false);
             }
         }
 

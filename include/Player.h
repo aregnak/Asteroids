@@ -51,30 +51,6 @@ public:
                          sprite.getPosition().y - std::sin(sprite.getRotation()));
     }
 
-    void processEvent(sf::Keyboard::Key key, bool isPressed)
-    {
-        std::cout << isPressed << std::endl;
-        if (key == sf::Keyboard::W || key == sf::Keyboard::Up)
-        {
-            up = isPressed;
-        }
-
-        if (key == sf::Keyboard::S || key == sf::Keyboard::Down)
-        {
-            down = isPressed;
-        }
-
-        if (key == sf::Keyboard::A || key == sf::Keyboard::Left)
-        {
-            left = isPressed;
-        }
-
-        if (key == sf::Keyboard::D || key == sf::Keyboard::Right)
-        {
-            right = isPressed;
-        }
-    }
-
     void update(sf::Time& deltaTime)
     {
         sf::Vector2f movement;
@@ -117,14 +93,10 @@ public:
             _velocity *= _maxspeed / _speed;
         }
 
-        std::cout << "old vel: " << _velocity.x << "    " << _velocity.y << std::endl;
+        //std::cout << "old vel: " << _velocity.x << "    " << _velocity.y << std::endl;
 
-        sf::Vector2f newVel =
-            sf::Vector2f(_velocity.x * deltaTime.asSeconds(), _velocity.y * deltaTime.asSeconds());
-        rect.move(newVel); // move hitbox
-        sprite.move(newVel); // move sprite
-
-        //std::cout << "new vel: " << newVel.x << "    " << newVel.y << std::endl;
+        rect.move(_velocity * deltaTime.asSeconds()); // move hitbox
+        sprite.move(_velocity * deltaTime.asSeconds()); // move sprite
 
         // teleport player to opposite side if out of play area
         if (rect.getPosition().x <= -15)
