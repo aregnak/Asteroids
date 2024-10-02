@@ -18,7 +18,7 @@
 #include <ctime>
 #include <iostream>
 #include <string>
-#include <vector>
+#include <fstream>
 
 #include "Player.h"
 #include "Bullet.h"
@@ -34,6 +34,30 @@ void spawnAsteroids(std::vector<Asteroid>& rocks, int count, sf::Vector2f rockSi
     {
         rocks.push_back(Asteroid(rockSize, split, position));
     }
+}
+
+// read the fct names
+void saveHighScore(int highscore)
+{
+    std::ofstream outFile("save/highscore.txt");
+    if (outFile.is_open())
+    {
+        outFile << highscore;
+        outFile.close();
+    }
+}
+
+int loadHighScore()
+{
+    std::ifstream inFile("save/highscore.txt"); //
+    int highscore = 0;
+    if (inFile.is_open())
+    {
+        inFile >> highscore;
+        inFile.close();
+    }
+
+    return highscore;
 }
 
 int main()
@@ -80,6 +104,11 @@ int main()
     scoreT.setCharacterSize(30);
     scoreT.setPosition(30, 80);
 
+    sf::Text HscoreT;
+    HscoreT.setFont(font);
+    HscoreT.setCharacterSize(30);
+    HscoreT.setPosition(30, 130);
+
     sf::Text helpT;
     helpT.setFont(font);
     helpT.setString(
@@ -93,13 +122,15 @@ int main()
     bool mainMenu = true;
     sf::RectangleShape pauseBG;
 
-    sf::Clock timer;
+    sf::Clock timer; // delta time(r)
     sf::Clock gameClock;
 
     sf::Time shootCooldown = sf::seconds(0.2f); // Set your cooldown here
     sf::Time lastShotTime = sf::Time::Zero - shootCooldown;
 
     int destroyedRocks = 0;
+    int maxRocks = 5;
+    int highscore = loadHighScore();
 
     spawnAsteroids(rocks, 3, sf::Vector2f(50, 50), false);
 
@@ -226,6 +257,12 @@ int main()
                                 player.setHealth(1.f);
                             }
                         }
+
+                        if (destroyedRocks % 20 == 0)
+                        {
+                            maxRocks++;
+                            std::cout << "max rocks: " << maxRocks << std::endl;
+                        }
                     }
                 }
 
@@ -260,10 +297,10 @@ int main()
             int erasedCount = std::distance(newEnd, rocks.end());
             rocks.erase(newEnd, rocks.end());
 
-            if (erasedCount > 0 && rocks.size() < 9)
+            if (erasedCount > 0 && rocks.size() < maxRocks)
             {
                 spawnAsteroids(rocks, 1, sf::Vector2f(50, 50), false);
-                std::cout << "number of rocks: " << rocks.size() << std::endl;
+                //std::cout << "number of rocks: " << rocks.size() << std::endl;
             }
 
             bullets.erase(std::remove_if(bullets.begin(), bullets.end(),
@@ -279,10 +316,15 @@ int main()
             std::string score = "Score:" + std::to_string(destroyedRocks);
             scoreT.setString(score);
 
-            // display score and health
+            std::string highscoreText = "HighScore:" + std::to_string(highscore);
+            HscoreT.setString(highscoreText);
+
+            // display score and health and highscore
             window.draw(healthT);
             window.draw(scoreT);
+            window.draw(HscoreT);
         }
+
         else
         {
             if (gameOver)
@@ -290,6 +332,12 @@ int main()
                 gameStatusText.setString("Game Over!");
                 restartText.setString("press Enter to restart");
                 gameStatusText.setPosition(100, 300);
+
+                if (destroyedRocks > highscore)
+                {
+                    highscore = destroyedRocks;
+                    saveHighScore(highscore);
+                }
             }
             else if (pause)
             {

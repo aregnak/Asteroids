@@ -104,7 +104,8 @@ public:
 
     bool erase() const
     {
-        /*sf::Vector2f currentPos = rock.getPosition();
+        /*
+        sf::Vector2f currentPos = rock.getPosition();
         float dx = std::abs(currentPos.x - _initialPos.x);
         float dy = std::abs(currentPos.y - _initialPos.y);
 

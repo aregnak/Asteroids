@@ -119,7 +119,7 @@ public:
             sprite.setPosition(rect.getPosition().x, rect.getPosition().y);
         }
 
-        std::cout << clock.getElapsedTime().asSeconds() << std::endl;
+        //std::cout << clock.getElapsedTime().asSeconds() << std::endl;
         if (_isHit)
         {
             if (clock.getElapsedTime().asSeconds() > currentTime.asSeconds() + damageCD.asSeconds())
@@ -127,8 +127,8 @@ public:
                 sprite.setColor(sf::Color::White);
                 //std::cout << "hit" << std::endl;
             }
-            std::cout << currentTime.asSeconds() << "   " << damageCD.asSeconds() << "    "
-                      << clock.getElapsedTime().asSeconds() << std::endl;
+            //std::cout << currentTime.asSeconds() << "   " << damageCD.asSeconds() << "    "
+            //          << clock.getElapsedTime().asSeconds() << std::endl;
         }
     }
 
